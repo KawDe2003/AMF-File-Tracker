@@ -41,6 +41,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
+    // Get the first department as default if none provided
+    let deptId = body.currentDeptId;
+    if (!deptId) {
+      const firstDept = await prisma.department.findFirst();
+      deptId = firstDept?.id;
+    }
+
     const newFile = await prisma.file.create({
       data: {
         title: body.title,
@@ -49,13 +56,13 @@ export async function POST(request: Request) {
         leasingCRNo: body.leasingCRNo,
         vehicleNo: body.vehicleNo,
         priority: body.priority || 'LOW',
-        // Mock currentDeptId for initial registration
-        currentDeptId: body.currentDeptId || 'branch-id',
+        currentDeptId: deptId,
       }
     });
 
     return NextResponse.json(newFile, { status: 201 });
   } catch (error) {
+    console.error('Registration Error:', error);
     return NextResponse.json({ error: 'Failed to create file' }, { status: 500 });
   }
 }

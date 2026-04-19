@@ -1,6 +1,14 @@
+"use client";
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function Sidebar() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
   return (
     <aside className="sidebar">
       <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -42,7 +50,7 @@ export default function Sidebar() {
       </nav>
       
       <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-        &copy; {new Date().getFullYear()} AMF Finance PLC.
+        &copy; {year || '...'} AMF Finance PLC.
       </div>
 
       <style>{`

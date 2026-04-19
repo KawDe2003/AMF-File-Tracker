@@ -1,6 +1,39 @@
 import AppLayout from "@/components/layout/AppLayout";
+import prisma from "@/lib/prisma";
+import { FileStatus } from "@prisma/client";
 
-export default function Home() {
+export default async function Home() {
+  const totalFiles = await prisma.file.count();
+  const filesAtBranch = await prisma.file.count({
+    where: { status: FileStatus.AT_BRANCH }
+  });
+  const filesInTransit = await prisma.file.count({
+    where: { status: FileStatus.IN_TRANSIT }
+  });
+  const delayedFilesCount = 0; // Mock for now
+
+  const pendingApprovalsCount = await prisma.fileMovement.count({
+    where: { status: 'PENDING' }
+  });
+
+  const recentMovements = await prisma.fileMovement.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      file: true,
+      fromDept: true,
+      toDept: true
+    }
+  });
+
+  const pendingApprovals = await prisma.fileMovement.findMany({
+    where: { status: 'PENDING' },
+    take: 5,
+    include: {
+      file: true,
+      sender: true
+    }
+  });
   return (
     <AppLayout>
       <div style={{ marginBottom: '2rem' }}>
@@ -16,7 +49,7 @@ export default function Home() {
           </div>
           <div>
             <p className="card-title">Total Files</p>
-            <h3 className="card-value">12,450</h3>
+            <h3 className="card-value">{totalFiles.toLocaleString()}</h3>
           </div>
         </div>
 
@@ -26,7 +59,7 @@ export default function Home() {
           </div>
           <div>
             <p className="card-title">Files at Branch</p>
-            <h3 className="card-value">11,200</h3>
+            <h3 className="card-value">{filesAtBranch.toLocaleString()}</h3>
           </div>
         </div>
 
@@ -36,7 +69,7 @@ export default function Home() {
           </div>
           <div>
             <p className="card-title">Files In Transit</p>
-            <h3 className="card-value">845</h3>
+            <h3 className="card-value">{filesInTransit.toLocaleString()}</h3>
           </div>
         </div>
 
@@ -46,7 +79,7 @@ export default function Home() {
           </div>
           <div>
             <p className="card-title">Delayed Files</p>
-            <h3 className="card-value" style={{ color: 'var(--danger-color)' }}>42</h3>
+            <h3 className="card-value" style={{ color: 'var(--danger-color)' }}>{delayedFilesCount}</h3>
           </div>
         </div>
       </div>
@@ -60,24 +93,22 @@ export default function Home() {
           </div>
           
           <div className="movement-list">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="movement-item">
+            {recentMovements.length === 0 ? (
+               <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No recent movements found.</p>
+            ) : recentMovements.map((m) => (
+              <div key={m.id} className="movement-item">
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.2rem' }}>CR Book - CAB-204{i}</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sent from <strong>City Branch</strong> to <strong>Head Office</strong></p>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.2rem' }}>{m.file.title}</h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sent from <strong>{m.fromDept.name}</strong> to <strong>{m.toDept.name}</strong></p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  {i === 1 ? (
-                    <span className="badge badge-warning">IN TRANSIT</span>
-                  ) : (
-                    <span className="badge badge-success">COMPLETED</span>
-                  )}
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>{i * 15} mins ago</p>
+                  <span className={`badge ${m.status === 'IN_TRANSIT' ? 'badge-warning' : 'badge-success'}`}>{m.status}</span>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>Just now</p>
                 </div>
               </div>
             ))}
@@ -88,7 +119,7 @@ export default function Home() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Pending Approvals</h3>
-            <span className="badge badge-warning">3 Pending</span>
+            <span className="badge badge-warning">{pendingApprovalsCount} Pending</span>
           </div>
 
           <div className="approval-table-wrapper" style={{ overflowX: 'auto' }}>
@@ -101,13 +132,17 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {[1, 2, 3].map((i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                {pendingApprovals.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending approvals.</td>
+                  </tr>
+                ) : pendingApprovals.map((ap) => (
+                  <tr key={ap.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '1rem 0', fontWeight: 500 }}>
-                      Leasing - LN984{i}
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginTop: '2px' }}>Legal Dept</div>
+                      {ap.file.title}
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginTop: '2px' }}>{ap.file.nic}</div>
                     </td>
-                    <td style={{ padding: '1rem 0' }}>S. Perera</td>
+                    <td style={{ padding: '1rem 0' }}>{ap.sender.name}</td>
                     <td style={{ padding: '1rem 0', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                         <button className="btn btn-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}>Approve</button>
