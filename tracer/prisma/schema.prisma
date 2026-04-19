@@ -1,0 +1,146 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String       @id @default(uuid())
+  email            String       @unique
+  passwordHash     String
+  role             Role         @default(STAFF)
+  departmentId     String?
+  department       Department?  @relation(fields: [departmentId], references: [id])
+  name             String
+  nic              String?
+
+  sentFiles        FileMovement[] @relation("Sender")
+  receivedFiles    FileMovement[] @relation("Receiver")
+  managerApprovals Approval[]
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+  currentFiles     File[]         @relation("CurrentUser")
+}
+
+model Department {
+  id               String       @id @default(uuid())
+  name             String       @unique
+  users            User[]
+  filesAtDept      File[]       @relation("CurrentDept")
+  movementsFrom    FileMovement[] @relation("FromDept")
+  movementsTo      FileMovement[] @relation("ToDept")
+}
+
+model File {
+  id               String       @id @default(uuid())
+  title            String
+  fileType         FileType
+  nic              String
+  leasingCRNo      String?
+  vehicleNo        String?
+  priority         Priority     @default(LOW)
+  status           FileStatus   @default(AT_BRANCH)
+  
+  currentDeptId    String?
+  currentDept      Department?  @relation("CurrentDept", fields: [currentDeptId], references: [id])
+  
+  currentUserId    String?
+  currentUser      User?        @relation("CurrentUser", fields: [currentUserId], references: [id])
+  
+  movements        FileMovement[]
+}
+
+model FileMovement {
+  id               String           @id @default(uuid())
+  fileId           String
+  file             File             @relation(fields: [fileId], references: [id])
+  
+  senderId         String
+  sender           User             @relation("Sender", fields: [senderId], references: [id])
+  
+  receiverId       String?
+  receiver         User?            @relation("Receiver", fields: [receiverId], references: [id])
+  
+  fromDeptId       String
+  fromDept         Department       @relation("FromDept", fields: [fromDeptId], references: [id])
+  
+  toDeptId         String
+  toDept           Department       @relation("ToDept", fields: [toDeptId], references: [id])
+  
+  status           MovementStatus   @default(PENDING)
+  comments         String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  
+  approvals        Approval[]
+}
+
+model Approval {
+  id               String           @id @default(uuid())
+  movementId       String
+  movement         FileMovement     @relation(fields: [movementId], references: [id])
+  
+  managerId        String
+  manager          User             @relation(fields: [managerId], references: [id])
+  
+  decision         ApprovalDecision
+  comments         String?
+  createdAt        DateTime         @default(now())
+}
+
+model AuditLog {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id])
+  action           String
+  details          String?
+  timestamp        DateTime         @default(now())
+}
+
+model Notification {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id])
+  message          String
+  readStatus       Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum FileType {
+  LEASING
+  CR
+  LEGAL
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum FileStatus {
+  AT_BRANCH
+  IN_TRANSIT
+  COMPLETED
+}
+
+enum MovementStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+}
