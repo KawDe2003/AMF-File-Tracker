@@ -3,37 +3,46 @@
 import AppLayout from "@/components/layout/AppLayout";
 import { useState, useEffect } from "react";
 import KycForm from "@/components/forms/KycForm";
+import { 
+  ShieldCheck, 
+  Search, 
+  MapPin, 
+  Clock, 
+  FileCheck, 
+  ChevronRight,
+  TrendingUp,
+  Layout,
+  User,
+  Info
+} from "lucide-react";
 
-export default function Verification() {
+export default function VerificationPage() {
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingFile, setEditingFile] = useState<any | null>(null);
   const [updating, setUpdating] = useState(false);
   const [activeMode, setActiveMode] = useState<'customer' | 'guarantor'>('customer');
 
-  const fetchFiles = async () => {
-    try {
-      const res = await fetch('/api/files');
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      const verificationPending = data.filter((f: any) => 
-          f.thirdPartyStatus !== 'VERIFIED' || 
-          f.customerStatus !== 'VERIFIED'
-      );
-      setFiles(verificationPending);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    async function fetchFiles() {
+      try {
+        const res = await fetch('/api/files');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        // Only show files that are not fully verified
+        setFiles(data.filter((f: any) => f.customerStatus !== 'VERIFIED' || f.guarantorStatus !== 'VERIFIED'));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
     fetchFiles();
   }, []);
 
-  const handleEditClick = (file: any) => {
+  const handleStartVerification = (file: any) => {
     setEditingFile(file);
+    setActiveMode('customer');
   };
 
   const handleCancelEdit = () => {
@@ -41,43 +50,54 @@ export default function Verification() {
   };
 
   const handleSaveEdit = async (formData: any) => {
-    if (!editingFile) return;
     setUpdating(true);
     try {
-       const res = await fetch(`/api/files/${editingFile.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-       });
+      const res = await fetch(`/api/files/${editingFile.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          // Update the specific status based on mode
+          [activeMode === 'customer' ? 'customerStatus' : 'guarantorStatus']: 'VERIFIED'
+        })
+      });
 
-       if (!res.ok) throw new Error('Failed to save state');
-       const updated = await res.json();
-       
-       // Update list locally for responsiveness
-       setFiles(prev => prev.map(f => f.id === updated.id ? updated : f));
-       setEditingFile(null);
+      if (!res.ok) throw new Error('Update failed');
+      
+      // Refresh list
+      const refreshRes = await fetch('/api/files');
+      const data = await refreshRes.json();
+      setFiles(data.filter((f: any) => f.customerStatus !== 'VERIFIED' || f.guarantorStatus !== 'VERIFIED'));
+      
+      setEditingFile(null);
     } catch (err) {
-       console.error(err);
-       alert("Error updating verification state.");
+      console.error(err);
+      alert('Failed to save verification data');
     } finally {
-       setUpdating(false);
+      setUpdating(false);
     }
   };
 
   return (
     <AppLayout>
-      <div className="verification-container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="approvals-container">
         <div className="approvals-hero">
-          <div className="hero-lead">
-            <h1 className="hero-title">Verification <span>Gateway</span></h1>
-            <p className="hero-desc">Manage physical asset authorization states and third-party verifications.</p>
-          </div>
-          <div className="hero-stats">
-            <div className="mini-stat">
-              <span className="ms-val">{files.length}</span>
-              <span className="ms-label">Pending Checks</span>
-            </div>
-          </div>
+           <div className="hero-content">
+              <h1 className="hero-title">Live <span>Verification</span> Node</h1>
+              <p className="hero-desc">Active call-center protocol for auditing facility applicants and guarantors.</p>
+           </div>
+           
+           <div className="hero-stats">
+              <div className="mini-stat">
+                 <span className="ms-val">{files.length}</span>
+                 <span className="ms-label">Pending Node</span>
+              </div>
+              <div className="stat-divider" style={{ width: '1px', height: '24px', background: 'var(--border-color)' }}></div>
+              <div className="mini-stat">
+                 <span className="ms-val">{files.filter(f => f.priority === 'HIGH').length}</span>
+                 <span className="ms-label">High Priority</span>
+              </div>
+           </div>
         </div>
 
         <div className="card node-card">
@@ -85,63 +105,63 @@ export default function Verification() {
             <table className="node-table">
               <thead>
                 <tr>
-                  <th>Asset Reference</th>
-                  <th>Principal (Client)</th>
-                  <th>Guarantor Pool</th>
-                  <th>Third-Party Auth</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                  <th>Facility Reference</th>
+                  <th>Legal Subject</th>
+                  <th>Guarantor Node</th>
+                  <th>3rd Party</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5}>
-                      <div className="loading-state">
-                        <div className="loading-ring" />
-                        <span>Synchronizing verification targets...</span>
-                      </div>
+                    <td colSpan={5} className="loading-state">
+                       <div className="loading-ring"></div>
+                       <p>Opening Secure Channels...</p>
                     </td>
                   </tr>
                 ) : files.length === 0 ? (
                   <tr>
-                    <td colSpan={5}>
-                      <div className="empty-node-state">
-                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", marginBottom: '0.75rem' }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                         <p>No assets pending verification.</p>
-                      </div>
+                    <td colSpan={5} className="empty-node-state">
+                       <ShieldCheck size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                       <p>All facilities in current queue are fully verified.</p>
                     </td>
                   </tr>
-                ) : files.map((file) => {
-                  return (
+                ) : files.map((file) => (
                   <tr key={file.id} className="node-row">
                     <td>
                       <div className="n-id-wrap">
-                        <span className="n-id">#{file.id.substring(0, 8).toUpperCase()}</span>
-                        <span className="n-title">{file.title}</span>
+                        <span className="n-id">#{file.id.substring(0,8).toUpperCase()}</span>
+                        <div className={`badge ${file.priority === 'HIGH' ? 'badge-danger' : file.priority === 'MEDIUM' ? 'badge-warning' : 'badge-success'}`} style={{ fontSize: '0.6rem', padding: '0.15rem 0.4rem' }}>
+                          {file.priority}
+                        </div>
                       </div>
                     </td>
                     <td>
-                      <span className={`status-badge ${file.customerStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                           {file.customerStatus.replace('_', ' ')}
-                      </span>
+                      <div className="n-subject">
+                        <span className="n-title">{file.title}</span>
+                        <span className={`status-badge ${file.customerStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                           Consumer: {file.customerStatus || 'PENDING'}
+                        </span>
+                      </div>
                     </td>
                     <td>
-                      <span className={`status-badge ${file.guarantorStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                           {file.guarantorStatus.replace('_', ' ')}
-                      </span>
+                       <span className={`status-badge ${file.guarantorStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                          Guarantor: {file.guarantorStatus || 'PENDING'}
+                       </span>
                     </td>
                     <td>
-                      <span className={`status-badge ${file.thirdPartyStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                           {file.thirdPartyStatus.replace('_', ' ')}
-                      </span>
+                       <span className={`status-badge ${file.thirdPartyStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                          Security: {file.thirdPartyStatus || 'PENDING'}
+                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                        <button className="btn btn-primary" onClick={() => handleEditClick(file)} style={{ padding: '0.4rem 0.75rem', fontSize: '0.7rem', background: '#1e40af' }}>
-                            Perform Call
-                        </button>
+                    <td>
+                      <button className="btn btn-primary btn-icon" onClick={() => handleStartVerification(file)}>
+                        <ChevronRight size={18} />
+                      </button>
                     </td>
                   </tr>
-                )})}
+                ))}
               </tbody>
             </table>
           </div>
@@ -149,8 +169,8 @@ export default function Verification() {
 
         {/* Full-Screen Verification Modal */}
         {editingFile && (
-           <div className="modal-overlay">
-              <div className="modal-content-kyc">
+           <div className="modal-overlay" onClick={handleCancelEdit}>
+              <div className="modal-content-kyc" onClick={e => e.stopPropagation()}>
                  <div className="modal-header-kyc">
                     <div className="mht">
                        <h2 className="modal-title-kyc">Live Verification <span>Terminal</span></h2>
@@ -235,16 +255,17 @@ export default function Verification() {
 
                     <div className="form-spacer" style={{ height: '2rem', borderBottom: '1px dashed var(--border-color)', marginBottom: '2rem' }}></div>
 
-                    <KycForm 
-                      key={activeMode} // Reset form state when switching mode for clear UI
-                      initialData={editingFile}
-                      onSubmit={handleSaveEdit}
-                      onCancel={handleCancelEdit}
-                      loading={updating}
-                      submitLabel={`Update & Save ${activeMode === 'customer' ? 'Customer' : 'Guarantor'} Verification`}
-                      isUpdate={true}
-                      mode={activeMode}
-                    />
+                    <div key={activeMode} className="animate-slide-fade">
+                        <KycForm 
+                          initialData={editingFile}
+                          onSubmit={handleSaveEdit}
+                          onCancel={handleCancelEdit}
+                          loading={updating}
+                          submitLabel={`Update & Save ${activeMode === 'customer' ? 'Customer' : 'Guarantor'} Verification`}
+                          isUpdate={true}
+                          mode={activeMode}
+                        />
+                    </div>
                  </div>
               </div>
            </div>

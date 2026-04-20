@@ -266,7 +266,7 @@ export default function FileDirectory() {
                        <div className="fit-body">
                           {/* OVERVIEW TAB */}
                           {activeTab === 'OVERVIEW' && (
-                             <div className="tab-pane overview-pane">
+                             <div className="tab-pane overview-pane animate-slide-fade">
                                 <div className="pane-grid">
                                    <div className="fit-section">
                                       <h3><Info size={14} /> Core Registry</h3>
@@ -319,7 +319,7 @@ export default function FileDirectory() {
 
                           {/* IDENTITY TAB */}
                           {activeTab === 'IDENTITY' && (
-                             <div className="tab-pane identity-pane">
+                             <div className="tab-pane identity-pane animate-slide-fade">
                                 <div className="kyc-scroll-area">
                                    <div className="kyc-cluster">
                                       <div className="kyc-header customer">
@@ -369,14 +369,14 @@ export default function FileDirectory() {
 
                           {/* PROTOCOL HISTORY TAB */}
                           {activeTab === 'PROTOCOL' && (
-                             <div className="tab-pane protocol-pane">
+                             <div className="tab-pane protocol-pane animate-slide-fade">
                                 <div className="timeline">
                                    {fileDetails.movements?.length === 0 ? (
                                       <div className="null-timeline">No historical transfers recorded for this facility.</div>
                                    ) : fileDetails.movements.map((move: any, idx: number) => (
                                       <div key={move.id} className="timeline-item">
                                          <div className="tl-line" />
-                                         <div className="tl-indicator" />
+                                         <div className={`tl-indicator ${idx === 0 ? 'animate-transmission' : ''}`} />
                                          <div className="tl-body">
                                             <div className="tl-header">
                                                <div className="tl-main">
