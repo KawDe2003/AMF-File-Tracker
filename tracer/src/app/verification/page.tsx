@@ -279,7 +279,7 @@ export default function Verification() {
           .node-table tr:last-child td { border-bottom: none; }
 
           .n-id-wrap { display: flex; flex-direction: column; gap: 0.15rem; }
-          .n-id { font-family: monospace; font-size: 0.75rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; display: inline-block; width: max-content; }
+          .n-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; display: inline-block; width: max-content; }
           .n-title { font-size: 0.85rem; color: var(--text-main); font-weight: 600; }
 
           .status-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 4px; }
@@ -359,7 +359,7 @@ export default function Verification() {
             color: #0f172a;
           }
           .bp-val.monospace {
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-family: var(--font-mono);
             font-size: 0.8rem;
             color: #2563eb;
           }
@@ -375,7 +375,7 @@ export default function Verification() {
           }
           .modal-title-kyc { font-size: 1.25rem; margin: 0; color: var(--text-main); font-weight: 800; }
           .modal-title-kyc span { color: var(--primary-color); }
-          .modal-desc-kyc { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin: 0.25rem 0 0 0; font-family: monospace; }
+          .modal-desc-kyc { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin: 0.25rem 0 0 0; font-family: var(--font-mono); }
           .modal-close-kyc { background: none; border: none; font-size: 2rem; line-height: 1; color: var(--text-muted); cursor: pointer; transition: color 0.15s; }
           .modal-close-kyc:hover { color: var(--text-main); }
           .modal-body-kyc { padding: 2rem; overflow-y: auto; flex: 1; }
