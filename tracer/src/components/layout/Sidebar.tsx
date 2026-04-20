@@ -31,6 +31,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Files Directory', href: '/files', icon: Files },
     { name: 'File Registration', href: '/files/register', icon: UserPlus },
+    { name: 'Movement Registry', href: '/movements', icon: CreditCard },
     { name: 'Verification', href: '/verification', icon: ShieldCheck },
     { name: 'Operational Reports', href: '/reports', icon: BarChart3 },
     { name: 'Admin Control', href: '/admin', icon: Settings },
