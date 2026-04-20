@@ -182,31 +182,55 @@ export default function Verification() {
                           <span className="bp-timestamp">Locked for Audit</span>
                        </div>
                        <div className="blueprint-grid">
-                          <div className="bp-item">
-                             <label>Asset Reference ID</label>
-                             <div className="bp-val monospace">#{editingFile.id.substring(0,8).toUpperCase()}</div>
-                          </div>
-                          <div className="bp-item">
-                             <label>Finance / Tag / BL</label>
-                             <div className="bp-val">{editingFile.financeCompany} | {editingFile.tagNo} | {editingFile.blNo}</div>
-                          </div>
-                          <div className="bp-item">
-                             <label>Vehicle / Engine / Chassis</label>
-                             <div className="bp-val monospace">{editingFile.vehicleNo} / {editingFile.engineNo} / {editingFile.chassisNo}</div>
-                          </div>
-                          <div className="bp-item">
-                             <label>Legal Subject (Client)</label>
-                             <div className="bp-val">{editingFile.title}</div>
-                          </div>
-                          <div className="bp-item">
-                             <label>National ID (NIC)</label>
-                             <div className="bp-val monospace">{editingFile.nic}</div>
-                          </div>
-                          <div className="bp-item">
-                             <label>Branch / Marketing Officer</label>
-                             <div className="bp-val">{editingFile.branchCode} / {editingFile.marketingOfficer || 'N/A'}</div>
-                          </div>
-                       </div>
+                           <div className="bp-item">
+                              <label>Asset Ref ID</label>
+                              <div className="bp-val monospace">#{editingFile.id.substring(0,8).toUpperCase()}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>File Category</label>
+                              <div className="bp-val">{editingFile.fileType}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Finance Co</label>
+                              <div className="bp-val">{editingFile.financeCompany}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Tag Number</label>
+                              <div className="bp-val monospace">{editingFile.tagNo || 'N/A'}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>BL Number</label>
+                              <div className="bp-val monospace">{editingFile.blNo || 'N/A'}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Vehicle No</label>
+                              <div className="bp-val monospace">{editingFile.vehicleNo || 'N/A'}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Engine No</label>
+                              <div className="bp-val monospace">{editingFile.engineNo || 'N/A'}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Chassis No</label>
+                              <div className="bp-val monospace">{editingFile.chassisNo || 'N/A'}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Client Name</label>
+                              <div className="bp-val">{editingFile.title}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>National ID</label>
+                              <div className="bp-val monospace">{editingFile.nic}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Branch Code</label>
+                              <div className="bp-val">{editingFile.branchCode}</div>
+                           </div>
+                           <div className="bp-item">
+                              <label>Marketing Officer</label>
+                              <div className="bp-val">{editingFile.marketingOfficer || 'N/A'}</div>
+                           </div>
+                        </div>
                     </div>
 
                     <div className="form-spacer" style={{ height: '2rem', borderBottom: '1px dashed var(--border-color)', marginBottom: '2rem' }}></div>
@@ -317,7 +341,7 @@ export default function Verification() {
           }
           .blueprint-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.25rem;
           }
           .bp-item label {
