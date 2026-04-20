@@ -21,8 +21,15 @@ export default function KycForm({
   isUpdate = false,
   mode = 'customer'
 }: KycFormProps) {
-  const [formData, setFormData] = useState(initialData);
-
+  const [formData, setFormData] = useState(() => {
+    const cleanData = { ...initialData };
+    Object.keys(cleanData).forEach(key => {
+      if (cleanData[key] === null) {
+        cleanData[key] = "";
+      }
+    });
+    return cleanData;
+  });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
