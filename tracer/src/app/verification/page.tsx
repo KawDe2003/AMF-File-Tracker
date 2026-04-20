@@ -299,11 +299,13 @@ export default function VerificationPage() {
           .node-row:hover { background: #f8fafc; }
           .node-table tr:last-child td { border-bottom: none; }
 
-          .n-id-wrap { display: flex; flex-direction: column; gap: 0.15rem; }
+          .n-id-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
           .n-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; display: inline-block; width: max-content; }
-          .n-title { font-size: 0.85rem; color: var(--text-main); font-weight: 600; }
+          
+          .n-subject { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+          .n-title { font-size: 0.85rem; color: var(--text-main); font-weight: 800; }
 
-          .status-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 4px; }
+          .status-badge { display: inline-block; width: max-content; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 4px; letter-spacing: 0.05em; }
           .status-badge.success { background: #d1fae5; color: #059669; border: 1px solid #10b981; }
           .status-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #f59e0b; }
 
