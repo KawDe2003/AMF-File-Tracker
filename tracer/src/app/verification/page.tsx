@@ -56,9 +56,7 @@ export default function VerificationPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          // Update the specific status based on mode
-          [activeMode === 'customer' ? 'customerStatus' : 'guarantorStatus']: 'VERIFIED'
+          ...formData
         })
       });
 
