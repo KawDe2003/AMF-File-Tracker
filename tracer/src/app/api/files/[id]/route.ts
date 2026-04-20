@@ -105,7 +105,7 @@ export async function PATCH(
         // Outcome (Customer)
         guarantorRelationship: body.guarantorRelationship,
         detailsProvided: body.detailsProvided,
-        cooperationRating: body.cooperationRating ? parseInt(body.cooperationRating) : undefined,
+        cooperationRating: (body.cooperationRating && !isNaN(parseInt(body.cooperationRating))) ? parseInt(body.cooperationRating) : null,
         contactType: body.contactType,
         specialRemarks: body.specialRemarks,
 
@@ -125,7 +125,7 @@ export async function PATCH(
         guarantorWorkExperience: body.guarantorWorkExperience,
         guarantorMonthlyIncome: body.guarantorMonthlyIncome,
         guarantorOtherIncome: body.guarantorOtherIncome,
-        guarantorCooperationRating: body.guarantorCooperationRating !== undefined ? parseInt(body.guarantorCooperationRating) : undefined,
+        guarantorCooperationRating: (body.guarantorCooperationRating && !isNaN(parseInt(body.guarantorCooperationRating))) ? parseInt(body.guarantorCooperationRating) : null,
         guarantorContactType: body.guarantorContactType,
         guarantorSpecialRemarks: body.guarantorSpecialRemarks,
 

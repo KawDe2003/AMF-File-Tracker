@@ -144,19 +144,16 @@ export default function KycForm({
             </select>
           </div>
           <div className="field-group">
-            <label className="field-label">9. Contact Number ( Call Connected No )</label>
+            <label className="field-label">9. Contact Number ( Call Connected No ) <span style={{color: '#e11d48'}}>*</span></label>
             <input type="text" name={f("contactNo", "guarantorContactNo")} className="field-input" value={formData[f("contactNo", "guarantorContactNo")]} onChange={handleChange} required />
-            <span className="field-required-hint">This question is required.</span>
           </div>
           <div className="field-group">
-            <label className="field-label">10. WhatsApp No</label>
+            <label className="field-label">10. WhatsApp No <span style={{color: '#e11d48'}}>*</span></label>
             <input type="text" name={f("whatsappNo", "guarantorWhatsappNo")} className="field-input" value={formData[f("whatsappNo", "guarantorWhatsappNo")]} onChange={handleChange} required />
-            <span className="field-required-hint">This question is required.</span>
           </div>
           <div className="field-group">
-            <label className="field-label">11. Alternative Contact Number</label>
+            <label className="field-label">11. Alternative Contact Number {isGuarantor && <span style={{color: '#e11d48'}}>*</span>}</label>
             <input type="text" name={f("altContactNo", "guarantorAltContactNo")} className="field-input" value={formData[f("altContactNo", "guarantorAltContactNo")]} onChange={handleChange} required={isGuarantor} />
-            {isGuarantor && <span className="field-required-hint">This question is required.</span>}
           </div>
           <div className="field-group">
             <label className="field-label">12. Best time to call</label>
@@ -326,7 +323,7 @@ export default function KycForm({
           
           {!isGuarantor && (
             <div className="field-group">
-              <label className="field-label">33. Were other details provided to the client?</label>
+              <label className="field-label">33. Were other details provided to the client? <span style={{color: '#e11d48'}}>*</span></label>
               <p className="field-desc-small">(Ex: Rental Amount, Due date, Loan Period, Facility Onboarding SMS)</p>
               <select name="detailsProvided" value={formData.detailsProvided} onChange={handleChange} className="field-select" required>
                 <option value="">Select an option</option>
@@ -334,30 +331,27 @@ export default function KycForm({
                 <option value="No, details not shared">No, details not shared</option>
                 <option value="Follow-up required">Follow-up required (Need to remind)</option>
               </select>
-              <span className="field-required-hint">This question is required.</span>
             </div>
           )}
 
           <div className="field-group">
-            <label className="field-label">{isGuarantor ? '22. Rate the guarantor\'s cooperation' : '34. Customer Cooperation (1-5)'}</label>
+            <label className="field-label">{isGuarantor ? '22. Rate the guarantor\'s cooperation' : '34. Customer Cooperation (1-5)'} {isGuarantor && <span style={{color: '#e11d48'}}>*</span>}</label>
             <input type="number" 
                    name={f("cooperationRating", "guarantorCooperationRating")} 
                    min="1" max="5" 
                    className="field-input" 
-                   value={formData[f("cooperationRating", "guarantorCooperationRating")]} 
+                   value={formData[f("cooperationRating", "guarantorCooperationRating")] || ''} 
                    onChange={handleChange} 
                    required={isGuarantor} />
-            {isGuarantor && <span className="field-required-hint">This question is required.</span>}
           </div>
 
           <div className="field-group">
-            <label className="field-label">{isGuarantor ? '23. Guarantor contacted via Inbound or Outbound?' : '35. Customer contacted via Inbound or Outbound?'}</label>
+            <label className="field-label">{isGuarantor ? '23. Guarantor contacted via Inbound or Outbound?' : '35. Customer contacted via Inbound or Outbound?'} <span style={{color: '#e11d48'}}>*</span></label>
             <select name={f("contactType", "guarantorContactType")} value={formData[f("contactType", "guarantorContactType")]} onChange={handleChange} className="field-select" required>
               <option value="">Select an option</option>
               <option value="Inbound">Inbound</option>
               <option value="Outbound">Outbound</option>
             </select>
-            <span className="field-required-hint">This question is required.</span>
           </div>
 
           {isUpdate && (

@@ -69,11 +69,14 @@ export default function ReportsPage({
           <div className="reports-header-actions">
             <ReportSnapshotFilter />
             <ExportButton 
-               label="Export Verification Matrix" 
-               endpoint="/api/reports/verification" 
-               params={{ date: searchParams.date || new Date().toISOString().split('T')[0] }}
-               variant="primary"
-            />
+               url={`/api/reports/verification?export=true&date=${searchParams.date || new Date().toISOString().split('T')[0]}`} 
+               filename="Verification_Matrix.xlsx"
+               className="btn btn-primary"
+               successMessage="Export downloaded successfully!"
+            >
+               <FileText size={16} />
+               Export Verification Matrix
+            </ExportButton>
           </div>
         </div>
 
