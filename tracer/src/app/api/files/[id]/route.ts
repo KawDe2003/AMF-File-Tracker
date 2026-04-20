@@ -1,65 +1,49 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const search = searchParams.get('q');
-
-    let files;
-    
-    if (search) {
-      files = await prisma.file.findMany({
-        where: {
-          OR: [
-            { nic: { contains: search } },
-            { vehicleNo: { contains: search } },
-            { tagNo: { contains: search } },
-            { blNo: { contains: search } },
-            { engineNo: { contains: search } },
-            { chassisNo: { contains: search } },
-            { leasingCRNo: { contains: search } },
-            { id: { contains: search } },
-          ]
-        },
-        include: {
-          currentDept: true
+    const { id } = await params;
+    const file = await prisma.file.findUnique({
+      where: { id },
+      include: {
+        currentDept: true,
+        currentUser: true,
+        movements: {
+          include: {
+            fromDept: true,
+            toDept: true,
+            sender: true,
+            receiver: true
+          },
+          orderBy: { createdAt: 'desc' }
         }
-      });
-    } else {
-      files = await prisma.file.findMany({
-        include: {
-          currentDept: true
-        },
-        orderBy: { createdAt: 'desc' }
-      });
+      }
+    });
+
+    if (!file) {
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
-    return NextResponse.json(files);
+    return NextResponse.json(file);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch files' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch file details' }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const body = await request.json();
-    console.log('Incoming Registration Payload:', body);
-    
-    // Core Field Validation
-    if (!body.title || !body.nic) {
-      console.warn('Missing core fields:', { title: body.title, nic: body.nic });
-      return NextResponse.json({ error: 'Customer Name and NIC are mandatory' }, { status: 400 });
-    }
+    const { id } = await params;
 
-    // Get the first department as default if none provided
-    let deptId = body.currentDeptId;
-    if (!deptId) {
-      const firstDept = await prisma.department.findFirst();
-      deptId = firstDept?.id;
-    }
-
-    const file = await prisma.file.create({
+    const updatedFile = await prisma.file.update({
+      where: { id },
       data: {
         // Core Identifiers
         financeCompany: body.financeCompany,
@@ -74,11 +58,10 @@ export async function POST(request: Request) {
         fileReceivedDate: body.fileReceivedDate,
         
         // Tracking
-        fileType: body.fileType || 'LEASING',
+        fileType: body.fileType,
         nic: body.nic,
-        priority: body.priority || 'LOW',
-        status: 'AT_BRANCH',
-        currentDeptId: deptId,
+        priority: body.priority,
+        status: body.status,
 
         // Branch & Officer
         branchCode: body.branchCode,
@@ -122,7 +105,7 @@ export async function POST(request: Request) {
         // Outcome (Customer)
         guarantorRelationship: body.guarantorRelationship,
         detailsProvided: body.detailsProvided,
-        cooperationRating: (body.cooperationRating && !isNaN(parseInt(body.cooperationRating))) ? parseInt(body.cooperationRating) : null,
+        cooperationRating: body.cooperationRating ? parseInt(body.cooperationRating) : undefined,
         contactType: body.contactType,
         specialRemarks: body.specialRemarks,
 
@@ -142,18 +125,45 @@ export async function POST(request: Request) {
         guarantorWorkExperience: body.guarantorWorkExperience,
         guarantorMonthlyIncome: body.guarantorMonthlyIncome,
         guarantorOtherIncome: body.guarantorOtherIncome,
-        guarantorCooperationRating: (body.guarantorCooperationRating && !isNaN(parseInt(body.guarantorCooperationRating))) ? parseInt(body.guarantorCooperationRating) : null,
+        guarantorCooperationRating: body.guarantorCooperationRating !== undefined ? parseInt(body.guarantorCooperationRating) : undefined,
         guarantorContactType: body.guarantorContactType,
         guarantorSpecialRemarks: body.guarantorSpecialRemarks,
+
+        // Ownership updates (legacy support)
+        ownerName: body.ownerName,
+        beneficiaryName: body.beneficiaryName,
+        paymentsDoneBy: body.paymentsDoneBy,
+        
+        // Verification updates
+        customerStatus: body.customerStatus,
+        customerCallMethod: body.customerCallMethod,
+        customerComment: body.customerComment,
+        
+        guarantorStatus: body.guarantorStatus,
+        guarantorCallMethod: body.guarantorCallMethod,
+        guarantorComment: body.guarantorComment,
+        
+        thirdPartyStatus: body.thirdPartyStatus,
+        thirdPartyComment: body.thirdPartyComment,
+        
+        needsManagerApproval: body.needsManagerApproval,
       }
     });
 
-    return NextResponse.json(file, { status: 201 });
+    // Create audit log entry for significant status changes
+    if (body.customerStatus || body.guarantorStatus || body.thirdPartyStatus) {
+      await prisma.auditLog.create({
+        data: {
+          userId: body.updaterId || 'SYSTEM', // Should ideally be session user
+          action: 'VERIFICATION_UPDATE',
+          details: `Updated verification status for file ${id}. Customer: ${body.customerStatus || 'No change'}, Third-Party: ${body.thirdPartyStatus || 'No change'}`,
+        }
+      });
+    }
+
+    return NextResponse.json(updatedFile);
   } catch (error) {
-    console.error('Registration Error Detail:', error);
-    return NextResponse.json({ 
-      error: 'Failed to create file',
-      details: error instanceof Error ? error.message : 'Unknown Database Error'
-    }, { status: 500 });
+    console.error('File Update Error:', error);
+    return NextResponse.json({ error: 'Failed to update file' }, { status: 500 });
   }
 }

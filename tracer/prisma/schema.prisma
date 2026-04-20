@@ -36,14 +36,111 @@ model Department {
 
 model File {
   id               String       @id @default(uuid())
-  title            String
+  
+  // Core identifiers (from screenshot header)
+  financeCompany   String?      // Field 1: LB / AMF
+  title            String       // Customer Name (file label)
+  leasingCRNo      String?      // Field 2: Deprecated in favor of tagNo/blNo
+  tagNo            String?      // New Split Field
+  blNo             String?      // New Split Field
+  vehicleNo        String?      // Field 3: Bike No (BHE1234)
+  engineNo         String?      // New Mandatory Field
+  chassisNo        String?      // New Mandatory Field
+  regUnreg         String?      // REG / UNREG toggle
+  fileReceivedDate String?      // Auto-set date, non-editable
+
+  // Internal tracking (kept from original schema)
   fileType         FileType
-  nic              String
-  leasingCRNo      String?
-  vehicleNo        String?
+  nic              String       // Field 6: National ID / Passport Number
   priority         Priority     @default(LOW)
   status           FileStatus   @default(AT_BRANCH)
+  createdAt        DateTime     @default(now())
+
+  // Branch & Officer
+  branchCode           String?  // Field 4
+  marketingOfficer     String?  // Field 5
+
+  // Residential Info
+  address              String?  // Field 7: Current Residential Address
+  residenceType        String?  // Field 8: Owned/Rented/Parental/Company
+
+  // Contact
+  contactNo            String?  // Field 9: Contact Number
+  whatsappNo           String?  // Field 10
+  altContactNo         String?  // Field 11
+  bestTimeToCall       String?  // Field 12
+
+  // Employment
+  employmentType       String?  // Field 13
+  employerName         String?  // Field 14
+  jobTitle             String?  // Field 15
+  economicSector       String?  // Field 16
+  salaryDate           String?  // Field 17
+  workExperience       String?  // Field 18
+  monthlyIncome        String?  // Field 19
+  otherIncome          String?  // Field 20
+
+  // Spouse / Relative Contact
+  spouseName           String?  // Field 21
+  spouseContact        String?  // Field 22
+  spouseRelationship   String?  // Field 23
+
+  // Asset & Financial Details
+  bikeMakeModel        String?  // Field 24
+  loanAmount           String?  // Field 25
+  assetUser            String?  // Field 26
+  daysReceivedVehicle  String?  // Field 27
+  vehiclePrice         String?  // Field 28
+  downPayment          String?  // Field 29
+  documentCharges      String?  // Field 30
+  insuranceCompany     String?  // Field 31
+
+  // KYC Outcome (Customer)
+  guarantorRelationship String? // Field 32 for Customer / Field 21 for Guarantor
+  detailsProvided       String? // Field 33
+  cooperationRating     Int?    // Field 34: 1-5
+  contactType           String? // Field 35: Inbound/Outbound
+  specialRemarks        String? // Field 36
   
+  // NEW: Detailed Guarantor KYC Data
+  guarantorNic              String? 
+  guarantorAddress          String?
+  guarantorResidenceType    String?
+  guarantorContactNo        String?
+  guarantorWhatsappNo       String?
+  guarantorAltContactNo     String?
+  guarantorBestTimeToCall   String?
+  guarantorEmploymentType   String?
+  guarantorEmployerName     String?
+  guarantorJobTitle         String?
+  guarantorEconomicSector   String?
+  guarantorSalaryDate       String?
+  guarantorWorkExperience   String?
+  guarantorMonthlyIncome    String?
+  guarantorOtherIncome      String?
+  guarantorCooperationRating Int?
+  guarantorContactType      String?  // Inbound/Outbound
+  guarantorSpecialRemarks   String?
+
+  // Verification Data (kept from original)
+  customerStatus      VerificationStatus @default(NOT_STARTED)
+  customerCallMethod  CallMethod?
+  customerComment     String?
+  
+  guarantorStatus     VerificationStatus @default(NOT_STARTED)
+  guarantorCallMethod CallMethod?
+  guarantorComment    String?
+  
+  thirdPartyStatus    ThirdPartyStatus @default(PENDING)
+  thirdPartyComment   String?
+  
+  needsManagerApproval Boolean @default(false)
+  
+  // Owner/Beneficiary (kept for backward compat)
+  ownerName       String?
+  beneficiaryName String?
+  paymentsDoneBy  String?
+
   currentDeptId    String?
   currentDept      Department?  @relation("CurrentDept", fields: [currentDeptId], references: [id])
   
@@ -143,4 +240,26 @@ enum MovementStatus {
 enum ApprovalDecision {
   APPROVED
   REJECTED
+}
+
+enum VerificationStatus {
+  NOT_STARTED
+  CONTACTED
+  VERIFIED
+  NOT_VERIFIED
+  UNABLE_TO_CONTACT
+}
+
+enum CallMethod {
+  PHONE
+  SMS
+  WHATSAPP
+  VISIT
+  OTHER
+}
+
+enum ThirdPartyStatus {
+  PENDING
+  VERIFIED
+  NOT_VERIFIED
 }

@@ -1,82 +1,197 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { 
+  LayoutDashboard, 
+  Files, 
+  UserPlus, 
+  ShieldCheck, 
+  Settings, 
+  X,
+  CreditCard,
+  Target,
+  BarChart3
+} from 'lucide-react';
 
-export default function Sidebar() {
-  const [year, setYear] = useState<number | null>(null);
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const pathname = usePathname();
 
   useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+    onClose();
+  }, [pathname]);
+
+  const menuItems = [
+    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Files Directory', href: '/files', icon: Files },
+    { name: 'File Registration', href: '/files/register', icon: UserPlus },
+    { name: 'Verification', href: '/verification', icon: ShieldCheck },
+    { name: 'Operational Reports', href: '/reports', icon: BarChart3 },
+    { name: 'Admin Control', href: '/admin', icon: Settings },
+  ];
+
   return (
-    <aside className="sidebar">
-      <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
-          AF
+    <aside className={`sidebar-container glass-sapphire ${isOpen ? 'sidebar-open' : ''}`}>
+      <div className="sidebar-brand">
+        <div className="brand-icon">
+          <Target size={22} strokeWidth={3} />
         </div>
-        <div>
-          <h1 style={{ color: 'var(--primary-color)', fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>File Tracer</h1>
-          <p style={{ fontSize: '0.75rem', color: 'var(--accent-color)', fontWeight: 600, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>AMF Finance PLC</p>
+        <div className="brand-info">
+          <h2 className="brand-name">TRACER <span>PRO</span></h2>
+          <span className="brand-status">Secure Environment</span>
         </div>
+        <button className="sidebar-close-btn" onClick={onClose}>
+          <X size={18} />
+        </button>
       </div>
       
-      <nav style={{ padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-        <Link href="/" className="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-          Dashboard
-        </Link>
-        <div className="nav-section-title">FILE MANAGEMENT</div>
-        <Link href="/files" className="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          File Directory
-        </Link>
-        <Link href="/files/register" className="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Register File
-        </Link>
-        
-        <div className="nav-section-title">WORKFLOW</div>
-        <Link href="/approvals" className="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          Approvals
-        </Link>
-        
-        <div className="nav-section-title">SYSTEM</div>
-        <Link href="/admin" className="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Admin Panel
-        </Link>
+      <nav className="sidebar-links">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
+          return (
+            <Link 
+              key={item.href} 
+              href={item.href} 
+              className={`sidebar-link ${isActive ? 'active' : ''}`}
+            >
+              <span className="link-icon">
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+              </span>
+              <span className="link-label">{item.name}</span>
+              {isActive && <div className="active-glow" />}
+            </Link>
+          );
+        })}
       </nav>
       
-      <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-        &copy; {year || '...'} AMF Finance PLC.
+      <div className="sidebar-footer">
+        <div className="system-card">
+          <div className="sc-header">
+            <div className="sc-dot" />
+            <span>Node: AMF-COL-01</span>
+          </div>
+          <p className="sc-ver">v3.1.0 - Sapphire Edition</p>
+        </div>
       </div>
 
       <style>{`
-        .nav-link {
+        .sidebar-container {
+          width: var(--sidebar-width);
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          padding: 2rem 1.25rem;
+          position: sticky;
+          top: 0;
+          z-index: 200;
+          flex-shrink: 0;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 768px) {
+          .sidebar-container { position: fixed; left: 0; top: 0; transform: translateX(-100%); }
+          .sidebar-container.sidebar-open { transform: translateX(0); }
+        }
+
+        .sidebar-brand {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem 1rem;
-          border-radius: var(--radius-md);
-          color: var(--text-muted);
-          font-weight: 500;
-          transition: background-color 0.2s ease, color 0.2s ease;
+          gap: 1rem;
+          margin-bottom: 3rem;
+          padding: 0 0.5rem;
         }
-        .nav-link:hover {
-          background-color: rgba(59, 130, 246, 0.1);
-          color: var(--primary-color);
+
+        .brand-icon {
+          width: 40px;
+          height: 40px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
-        .nav-section-title {
-          font-size: 0.7rem;
-          font-weight: 700;
-          color: var(--text-muted);
-          margin-top: 1.5rem;
-          margin-bottom: 0.25rem;
-          padding-left: 1rem;
+
+        .brand-name {
+          font-size: 1.1rem;
+          font-weight: 900;
+          color: white;
           letter-spacing: 0.05em;
         }
+        .brand-name span { color: var(--accent-color); }
+        
+        .brand-status {
+          font-size: 0.6rem;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.5);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          display: block;
+        }
+
+        .sidebar-links { display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+
+        .sidebar-link {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.8rem 1rem;
+          border-radius: 12px;
+          color: rgba(255, 255, 255, 0.6);
+          text-decoration: none;
+          font-weight: 700;
+          font-size: 0.85rem;
+          transition: all 0.3s;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .sidebar-link:hover {
+          color: white;
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-link.active {
+          color: white;
+          background: rgba(255, 255, 255, 0.1);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .active-glow {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          background: var(--accent-color);
+          box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .sidebar-close-btn {
+          display: none;
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          margin-left: auto;
+        }
+
+        @media (max-width: 768px) { .sidebar-close-btn { display: block; } }
+
+        .sidebar-footer { padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .system-card { padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 12px; }
+        .sc-header { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 700; color: white; margin-bottom: 0.25rem; }
+        .sc-dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+        .sc-ver { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4); margin: 0; }
       `}</style>
     </aside>
   );
