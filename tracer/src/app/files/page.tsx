@@ -433,7 +433,7 @@ export default function FileDirectory() {
           .explorer-row:hover { background: #f8fafc; }
           .explorer-row td { padding: 1.25rem 1.5rem; vertical-align: middle; }
 
-          .ref-pill { display: inline-block; padding: 0.25rem 0.65rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; color: var(--primary-color); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; }
+          .ref-pill { display: inline-block; padding: 0.25rem 0.65rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; color: var(--primary-color); font-size: 0.85rem; font-weight: 700; }
           .main-title { display: block; font-weight: 800; color: var(--slate-900); font-size: 1rem; margin-bottom: 0.15rem; }
           .main-meta { display: block; font-size: 0.75rem; font-weight: 600; color: var(--slate-400); }
           
@@ -461,7 +461,7 @@ export default function FileDirectory() {
 
           .fit-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--slate-100); display: flex; justify-content: space-between; align-items: center; background: white; }
           .fit-title { font-size: 1.15rem; font-weight: 900; color: var(--slate-900); margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
-          .fit-id-badge { font-family: var(--font-mono); font-size: 0.65rem; background: var(--slate-900); color: white; padding: 0.15rem 0.65rem; border-radius: 4px; margin-top: 0.25rem; }
+          .fit-id-badge { font-size: 0.85rem; background: var(--slate-900); color: white; padding: 0.15rem 0.65rem; border-radius: 4px; margin-top: 0.25rem; font-weight: 700; }
           .fit-close { font-size: 2rem; color: var(--slate-400); background: none; border: none; cursor: pointer; padding: 0; line-height: 1; }
 
           .fit-tabs { display: flex; gap: 0.5rem; padding: 0 2rem; background: white; border-bottom: 1px solid var(--slate-100); }

@@ -141,7 +141,7 @@ export default async function AdminPanel() {
           }
           .p-role-badge.gold { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
           .p-role-badge.silver { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border-color); }
-          .p-dept-code { font-family: var(--font-mono); font-size: 0.65rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; }
+          .p-dept-code { font-size: 0.85rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; }
 
           .btn-icon { display: flex; align-items: center; justify-content: center; border-radius: 4px; }
 
@@ -159,7 +159,7 @@ export default async function AdminPanel() {
           }
           .infra-content { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
           .infra-name { color: var(--text-main); font-weight: 600; font-size: 0.8rem; }
-          .infra-id { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); }
+          .infra-id { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
           .infra-visual { display: flex; gap: 2px; align-items: flex-end; height: 20px; opacity: 0.4; }
           .v-bar { width: 3px; background: var(--accent-color); border-radius: 1px; }
@@ -169,7 +169,7 @@ export default async function AdminPanel() {
           .sh-label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; }
           .sh-bar { flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
           .sh-progress { height: 100%; background: var(--primary-color); }
-          .sh-val { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-main); font-weight: 700; }
+          .sh-val { font-size: 0.85rem; color: var(--text-main); font-weight: 700; }
 
           .void-state { padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 

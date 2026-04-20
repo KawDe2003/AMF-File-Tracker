@@ -408,7 +408,7 @@ export default function KycForm({
         .module-card { padding: 2rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .module-name { font-size: 1.15rem; color: #1e3a8a; font-weight: 800; }
-        .module-step { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.25rem 0.6rem; border-radius: 4px; }
+        .module-step { font-size: 0.8rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.25rem 0.6rem; border-radius: 4px; }
         
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
         .full { grid-column: 1 / -1; }

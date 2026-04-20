@@ -247,7 +247,7 @@ export default function ReportsPage({
              text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--slate-100);
           }
           .registry-table td { padding: 1rem 1.5rem; font-size: 0.85rem; border-bottom: 1px solid var(--slate-50); }
-          .cell-code { font-family: var(--font-mono); font-weight: 700; color: var(--primary-color); }
+          .cell-code { font-weight: 700; color: var(--primary-color); font-size: 0.85rem; }
           .cell-bold { font-weight: 800; color: var(--slate-900); }
           .cell-date { font-size: 0.75rem; color: var(--slate-500); font-weight: 600; }
 

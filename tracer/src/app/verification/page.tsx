@@ -300,7 +300,7 @@ export default function VerificationPage() {
           .node-table tr:last-child td { border-bottom: none; }
 
           .n-id-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
-          .n-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; display: inline-block; width: max-content; }
+          .n-id { font-size: 0.85rem; color: var(--primary-color); font-weight: 700; background: #eff6ff; padding: 0.1rem 0.3rem; border-radius: 4px; display: inline-block; width: max-content; }
           
           .n-subject { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
           .n-title { font-size: 0.85rem; color: var(--text-main); font-weight: 800; }
@@ -382,8 +382,6 @@ export default function VerificationPage() {
             color: #0f172a;
           }
           .bp-val.monospace {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
             color: #2563eb;
           }
 
@@ -398,7 +396,7 @@ export default function VerificationPage() {
           }
           .modal-title-kyc { font-size: 1.25rem; margin: 0; color: var(--text-main); font-weight: 800; }
           .modal-title-kyc span { color: var(--primary-color); }
-          .modal-desc-kyc { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin: 0.25rem 0 0 0; font-family: var(--font-mono); }
+          .modal-desc-kyc { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin: 0.25rem 0 0 0; }
           .modal-close-kyc { background: none; border: none; font-size: 2rem; line-height: 1; color: var(--text-muted); cursor: pointer; transition: color 0.15s; }
           .modal-close-kyc:hover { color: var(--text-main); }
           .modal-body-kyc { padding: 2rem; overflow-y: auto; flex: 1; }

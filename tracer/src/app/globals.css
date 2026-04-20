@@ -73,9 +73,6 @@ button, input, select, textarea {
   font-family: inherit;
 }
 
-.font-mono {
-  font-family: var(--font-mono), monospace;
-}
 
 h1, h2, h3, h4 {
   font-weight: 800;

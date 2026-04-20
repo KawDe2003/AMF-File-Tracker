@@ -253,7 +253,7 @@ export default async function Home() {
           
           .feed-body { flex: 1; padding: 0.85rem; border-radius: 12px; }
           .feed-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
-          .file-id { font-family: var(--font-mono); font-size: 0.65rem; padding: 0.15rem 0.4rem; }
+          .file-id { font-size: 0.85rem; padding: 0.15rem 0.4rem; font-weight: 700; }
           .file-name { font-size: 0.8rem; font-weight: 800; }
           .feed-msg { font-size: 0.75rem; margin-bottom: 0.5rem; }
 
