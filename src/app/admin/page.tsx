@@ -44,6 +44,8 @@ function useToast() {
   return { toast, show };
 }
 
+export const dynamic = "force-dynamic";
+
 export default function AdminPanel() {
   const { toast, show } = useToast();
 

@@ -23,6 +23,8 @@ import {
   Loader2
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 function FileDirectoryContent() {
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get('search') || "";
