@@ -23,6 +23,8 @@ model User {
   auditLogs        AuditLog[]
   notifications    Notification[]
   currentFiles     File[]         @relation("CurrentUser")
+  
+  isCallingAgent   Boolean        @default(false)
 }
 
 model Department {
@@ -190,8 +192,8 @@ model Approval {
 
 model AuditLog {
   id               String           @id @default(uuid())
-  userId           String
-  user             User             @relation(fields: [userId], references: [id])
+  userId           String?
+  user             User?            @relation(fields: [userId], references: [id])
   action           String
   details          String?
   timestamp        DateTime         @default(now())
@@ -262,4 +264,11 @@ enum ThirdPartyStatus {
   PENDING
   VERIFIED
   NOT_VERIFIED
+}
+
+model AllocationConfig {
+  id              String   @id @default("1")
+  filesPerAgent   Int      @default(10)
+  autoAllocate    Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { recordAuditLog } from '@/lib/audit';
 
 export async function GET(
   request: Request,
@@ -150,16 +151,19 @@ export async function PATCH(
       }
     });
 
-    // Create audit log entry for significant status changes
+    // Create audit log entry for significant updates
+    const userId = request.headers.get('x-user-id') || 'SYSTEM';
+    
+    let auditAction = 'FILE_KYC_UPDATE';
+    let auditDetails = `Updated KYC data for file ${id} (${body.title || 'unnamed'})`;
+
     if (body.customerStatus || body.guarantorStatus || body.thirdPartyStatus) {
-      await prisma.auditLog.create({
-        data: {
-          userId: body.updaterId || 'SYSTEM', // Should ideally be session user
-          action: 'VERIFICATION_UPDATE',
-          details: `Updated verification status for file ${id}. Customer: ${body.customerStatus || 'No change'}, Third-Party: ${body.thirdPartyStatus || 'No change'}`,
-        }
-      });
+      auditAction = 'VERIFICATION_UPDATE';
+      auditDetails = `File ${id} status update: Customer[${body.customerStatus || 'N/A'}], Guarantor[${body.guarantorStatus || 'N/A'}], ThirdParty[${body.thirdPartyStatus || 'N/A'}]`;
     }
+
+    await recordAuditLog(userId, auditAction, auditDetails);
+
 
     return NextResponse.json(updatedFile);
   } catch (error) {

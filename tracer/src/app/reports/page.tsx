@@ -1,12 +1,13 @@
 "use client";
 
 import AppLayout from "@/components/layout/AppLayout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import ReportSnapshotFilter from "@/components/reports/ReportSnapshotFilter";
 import ExportButton from "@/components/ui/ExportButton";
 import { 
   FileText, 
   Clock, 
+  Shuffle,
   Map, 
   ShieldCheck, 
   AlertCircle,
@@ -18,17 +19,26 @@ import {
 export default function ReportsPage({
   searchParams,
 }: {
-  searchParams: { date?: string };
+  searchParams: Promise<{ date?: string }>;
 }) {
+  const params = use(searchParams);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const filterDate = searchParams.date ? new Date(searchParams.date) : new Date();
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const filterDate = params.date ? new Date(params.date) : new Date();
+
+  useEffect(() => {
+    // Get user role from headers or a separate info call
+    // Since we are in client, we can't easily read request headers, 
+    // but the system usually stores user info in local storage or we can fetch a /api/me
+    fetch('/api/users/me').then(r => r.json()).then(user => setUserRole(user.role)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function fetchStats() {
       setLoading(true);
       try {
-        const query = searchParams.date ? `?date=${searchParams.date}` : "";
+        const query = params.date ? `?date=${params.date}` : "";
         const res = await fetch(`/api/reports/verification${query}`);
         if (!res.ok) throw new Error("Failed to fetch reports");
         const json = await res.json();
@@ -40,7 +50,7 @@ export default function ReportsPage({
       }
     }
     fetchStats();
-  }, [searchParams.date]);
+  }, [params.date]);
 
   const StatCard = ({ title, value, icon: Icon, color }: any) => (
     <div className="card stat-report-card">
@@ -68,15 +78,51 @@ export default function ReportsPage({
           </div>
           <div className="reports-header-actions">
             <ReportSnapshotFilter />
-            <ExportButton 
-               url={`/api/reports/verification?export=true&date=${searchParams.date || new Date().toISOString().split('T')[0]}`} 
-               filename="Verification_Matrix.xlsx"
-               className="btn btn-primary"
-               successMessage="Export downloaded successfully!"
-            >
-               <FileText size={16} />
-               Export Verification Matrix
-            </ExportButton>
+            <div className="export-group">
+              <ExportButton 
+                 url={`/api/reports/verification?export=true&date=${params.date || new Date().toISOString().split('T')[0]}`} 
+                 filename="Verification_Matrix.xlsx"
+                 className="btn btn-primary"
+                 successMessage="Export downloaded successfully!"
+              >
+                 <FileText size={16} />
+                 Verification Matrix
+              </ExportButton>
+
+              <ExportButton 
+                 url="/api/reports/allocation" 
+                 filename="Allocation_Report.xlsx"
+                 className="btn btn-outline"
+                 successMessage="Allocation report generated successfully!"
+              >
+                 <Shuffle size={16} />
+                 Allocation Report
+              </ExportButton>
+
+              {userRole === 'ADMIN' && (
+                <>
+                  <ExportButton 
+                     url="/api/reports/performance" 
+                     filename="Performance_Audit.xlsx"
+                     className="btn btn-outline"
+                     successMessage="Performance audit exported successfully!"
+                  >
+                     <TrendingUp size={16} />
+                     Performance Matrix
+                  </ExportButton>
+
+                  <ExportButton 
+                     url="/api/reports/master" 
+                     filename="Master_Inventory.xlsx"
+                     className="btn btn-secondary"
+                     successMessage="Master inventory downloaded successfully!"
+                  >
+                     <Database size={16} />
+                     Master Export
+                  </ExportButton>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -202,6 +248,8 @@ export default function ReportsPage({
           .reports-title span { color: var(--primary-color); }
           .reports-desc { color: var(--slate-500); font-size: 0.95rem; margin: 0.25rem 0 0; font-weight: 500; }
           .reports-header-actions { display: flex; align-items: center; gap: 1rem; }
+          .export-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+          .export-group .btn { white-space: nowrap; }
 
           .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
           .stat-report-card { padding: 1.25rem; border: 1px solid var(--slate-200); }

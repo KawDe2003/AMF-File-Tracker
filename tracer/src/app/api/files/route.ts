@@ -5,12 +5,21 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('q');
+    
+    // Get requester info from headers (set by middleware)
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    const isCallingAgent = request.headers.get('x-user-calling-agent') === 'true';
 
+    // Role-based where clause: Calling agents only see files assigned to them
+    const baseWhere: any = isCallingAgent ? { currentUserId: userId } : {};
+    
     let files;
     
     if (search) {
       files = await prisma.file.findMany({
         where: {
+          ...baseWhere,
           OR: [
             { nic: { contains: search } },
             { vehicleNo: { contains: search } },
@@ -22,21 +31,30 @@ export async function GET(request: Request) {
             { id: { contains: search } },
           ]
         },
-        include: {
-          currentDept: true
-        }
+        include: { currentDept: true }
       });
     } else {
+      // For list view, handle explicit agent filtering for Admins
+      const filterAgentId = searchParams.get('agentId');
+      const finalWhere = { ...baseWhere };
+      
+      const isAdminOrManager = userRole === 'ADMIN' || userRole === 'MANAGER';
+      
+      if (isAdminOrManager && filterAgentId) {
+        finalWhere.currentUserId = filterAgentId;
+      }
+
+
       files = await prisma.file.findMany({
-        include: {
-          currentDept: true
-        },
+        where: finalWhere,
+        include: { currentDept: true },
         orderBy: { createdAt: 'desc' }
       });
     }
 
     return NextResponse.json(files);
   } catch (error) {
+    console.error('Fetch Files Error:', error);
     return NextResponse.json({ error: 'Failed to fetch files' }, { status: 500 });
   }
 }
