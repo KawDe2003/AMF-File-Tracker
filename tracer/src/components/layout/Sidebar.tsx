@@ -44,7 +44,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <Target size={22} strokeWidth={3} />
         </div>
         <div className="brand-info">
-          <h2 className="brand-name">TRACER <span>PRO</span></h2>
+          <h2 className="brand-name">AMF FILE <span>TRACKER</span></h2>
           <span className="brand-status">Secure Environment</span>
         </div>
         <button className="sidebar-close-btn" onClick={onClose}>

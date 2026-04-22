@@ -54,7 +54,7 @@ export default function LoginPage() {
             <Target size={28} strokeWidth={3} />
           </div>
           <div>
-            <h1 className="brand-title">TRACER <span>PRO</span></h1>
+            <h1 className="brand-title">AMF FILE <span>TRACKER</span></h1>
             <p className="brand-sub">Associated Motor Finance PLC</p>
           </div>
         </div>

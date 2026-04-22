@@ -9,13 +9,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AMF File Tracer | Associated Motor Finance PLC",
+  title: "AMF File Tracker | Associated Motor Finance PLC",
   description: "Secure physical document tracking system for Associated Motor Finance PLC.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
   maximumScale: 1,
 };
 
