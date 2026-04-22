@@ -40,8 +40,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <aside className={`sidebar-container glass-sapphire ${isOpen ? 'sidebar-open' : ''}`}>
       <div className="sidebar-brand">
-        <div className="brand-icon">
-          <Target size={22} strokeWidth={3} />
+        <div className="brand-logo-wrap">
+          <img src="/logo.png" alt="AMF Logo" className="brand-logo-img" />
         </div>
         <div className="brand-info">
           <h2 className="brand-name">AMF FILE <span>TRACKER</span></h2>
@@ -109,17 +109,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           padding: 0 0.5rem;
         }
 
-        .brand-icon {
-          width: 40px;
-          height: 40px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+        .brand-logo-wrap {
+          width: 42px;
+          height: 42px;
+          background: white;
           border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+          flex-shrink: 0;
+        }
+
+        .brand-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 2px;
         }
 
         .brand-name {

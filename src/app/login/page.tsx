@@ -51,7 +51,7 @@ export default function LoginPage() {
         {/* Branding */}
         <div className="login-brand">
           <div className="brand-icon-wrap">
-            <Target size={28} strokeWidth={3} />
+            <img src="/logo.png" alt="AMF Logo" className="brand-logo-login" />
           </div>
           <div>
             <h1 className="brand-title">AMF FILE <span>TRACKER</span></h1>
@@ -209,13 +209,18 @@ export default function LoginPage() {
         }
 
         .brand-icon-wrap {
-          width: 48px; height: 48px;
-          background: linear-gradient(135deg, var(--sapphire-600), var(--sapphire-800));
+          width: 52px; height: 52px;
+          background: white;
           border-radius: 14px;
           display: flex; align-items: center; justify-content: center;
-          color: white;
-          box-shadow: 0 8px 16px rgba(37,99,235,0.4);
+          overflow: hidden;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
           flex-shrink: 0;
+        }
+        .brand-logo-login {
+          width: 100%; height: 100%;
+          object-fit: contain;
+          padding: 4px;
         }
 
         .brand-title {

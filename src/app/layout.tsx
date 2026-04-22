@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "AMF File Tracker | Associated Motor Finance PLC",
   description: "Secure physical document tracking system for Associated Motor Finance PLC.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export const viewport: Viewport = {
