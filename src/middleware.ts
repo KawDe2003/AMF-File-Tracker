@@ -14,19 +14,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('tracer_session')?.value;
 
   // Decrypt and verify
-  let session = await decrypt(token);
-
-  // --- TEMPORARY LOGIN BYPASS ---
-  if (!session) {
-    session = {
-      id: "7b1ea6fe-7364-43c5-bd64-64999cde3802",
-      email: "admin@amf.lk",
-      name: "System Administrator",
-      role: "ADMIN",
-      isCallingAgent: false,
-    } as any;
-  }
-  // ------------------------------
+  const session = await decrypt(token);
 
   if (!isPublicPath && !session) {
     // Redirect to login if accessing a protected route without a session
