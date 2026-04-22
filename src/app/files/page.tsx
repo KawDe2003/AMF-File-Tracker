@@ -4,6 +4,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { 
   Search, 
   Plus, 
@@ -18,10 +19,11 @@ import {
   ChevronRight,
   TrendingUp,
   Map,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
 
-export default function FileDirectory() {
+function FileDirectoryContent() {
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get('search') || "";
   
@@ -517,5 +519,16 @@ export default function FileDirectory() {
         `}</style>
       </div>
     </AppLayout>
+export default function FileDirectory() {
+  return (
+    <Suspense fallback={
+      <AppLayout>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+          <div className="loader-pulse sapphire" />
+        </div>
+      </AppLayout>
+    }>
+      <FileDirectoryContent />
+    </Suspense>
   );
 }
