@@ -15,6 +15,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const totalFiles = await prisma.file.count();
   const filesAtBranch = await prisma.file.count({
