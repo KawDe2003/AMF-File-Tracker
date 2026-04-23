@@ -57,7 +57,7 @@ export async function PATCH(
         chassisNo: body.chassisNo,
         regUnreg: body.regUnreg,
         fileReceivedDate: body.fileReceivedDate,
-        
+
         // Tracking
         fileType: body.fileType,
         nic: body.nic,
@@ -134,26 +134,26 @@ export async function PATCH(
         ownerName: body.ownerName,
         beneficiaryName: body.beneficiaryName,
         paymentsDoneBy: body.paymentsDoneBy,
-        
+
         // Verification updates
-        customerStatus: body.customerStatus,
-        customerCallMethod: body.customerCallMethod,
+        customerStatus: body.customerStatus || undefined,
+        customerCallMethod: body.customerCallMethod || null,
         customerComment: body.customerComment,
-        
-        guarantorStatus: body.guarantorStatus,
-        guarantorCallMethod: body.guarantorCallMethod,
+
+        guarantorStatus: body.guarantorStatus || undefined,
+        guarantorCallMethod: body.guarantorCallMethod || null,
         guarantorComment: body.guarantorComment,
-        
-        thirdPartyStatus: body.thirdPartyStatus,
+
+        thirdPartyStatus: body.thirdPartyStatus || undefined,
         thirdPartyComment: body.thirdPartyComment,
-        
-        needsManagerApproval: body.needsManagerApproval,
+
+        needsManagerApproval: body.needsManagerApproval === true || body.needsManagerApproval === "true" || false,
       }
     });
 
     // Create audit log entry for significant updates
     const userId = request.headers.get('x-user-id') || 'SYSTEM';
-    
+
     let auditAction = 'FILE_KYC_UPDATE';
     let auditDetails = `Updated KYC data for file ${id} (${body.title || 'unnamed'})`;
 
