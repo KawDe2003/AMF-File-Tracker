@@ -41,8 +41,8 @@ export async function PATCH(
 ) {
   try {
     const rawBody = await request.json();
-    const body = Object.fromEntries(
-      Object.entries(rawBody).map(([key, value]) => [key, value === "" ? null : value])
+    const body: any = Object.fromEntries(
+      Object.entries(rawBody as any).map(([key, value]) => [key, value === "" ? null : value])
     );
     const { id } = await params;
 
