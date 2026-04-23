@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Zap } from "lucide-react";
 
 interface KycFormProps {
   initialData: any;
@@ -35,6 +36,79 @@ export default function KycForm({
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
+  const handleQuickFill = () => {
+    const rand = Math.floor(Math.random() * 900) + 100;
+    if (mode === 'customer') {
+      setFormData((prev: any) => ({
+        ...prev,
+        // Section 2 – Residence & Contact
+        address: 'No. 42, Galle Road, Colombo 03',
+        residenceType: 'Owned by self',
+        contactNo: `077${rand}${rand}`,
+        whatsappNo: `077${rand}${rand}`,
+        altContactNo: `071${rand}${rand}`,
+        bestTimeToCall: 'Morning',
+        // Section 3 – Employment
+        employmentType: 'Salaried',
+        employerName: 'Ceylon Biscuits Ltd, Pannipitiya',
+        jobTitle: 'Senior Executive – EMP/2024/045',
+        economicSector: 'Manufacturing',
+        salaryDate: '25th',
+        workExperience: '5',
+        monthlyIncome: '85,000',
+        otherIncome: 'N/A',
+        // Section 4 – Spouse
+        spouseName: 'Nimali Perera',
+        spouseContact: `075${rand}${rand}`,
+        spouseRelationship: 'Spouse',
+        // Section 5 – Asset
+        bikeMakeModel: 'Honda CB125F',
+        loanAmount: '285,000',
+        assetUser: 'Self',
+        daysReceivedVehicle: '1 week',
+        vehiclePrice: '310,000',
+        downPayment: '25,000',
+        documentCharges: '5,500',
+        insuranceCompany: 'Ceylinco',
+        // Section 6 – Outcome
+        guarantorRelationship: 'Brother',
+        detailsProvided: 'Yes, all details shared',
+        cooperationRating: 4,
+        contactType: 'Outbound',
+        customerStatus: 'VERIFIED',
+        specialRemarks: 'Customer confirmed all details. Call completed smoothly.',
+        regUnreg: 'REG',
+      }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        guarantorNic: `${rand}${rand}V`,
+        // Section 2 – Guarantor Residence & Contact
+        guarantorAddress: 'No. 15, Kandy Road, Kurunegala',
+        guarantorResidenceType: 'Parental home',
+        guarantorContactNo: `076${rand}${rand}`,
+        guarantorWhatsappNo: `076${rand}${rand}`,
+        guarantorAltContactNo: `072${rand}${rand}`,
+        guarantorBestTimeToCall: 'Afternoon',
+        // Section 3 – Guarantor Employment
+        guarantorEmploymentType: 'Business Owner',
+        guarantorEmployerName: 'Perera Trading Co.',
+        guarantorJobTitle: 'Director',
+        guarantorEconomicSector: 'Wholesale & Retail Trade',
+        guarantorSalaryDate: '1st',
+        guarantorWorkExperience: '8',
+        guarantorMonthlyIncome: '120,000',
+        guarantorOtherIncome: 'Rental income – 15,000',
+        guarantorRelationship: 'Brother',
+        // Section 6 – Guarantor Outcome
+        guarantorCooperationRating: 5,
+        guarantorContactType: 'Outbound',
+        guarantorStatus: 'VERIFIED',
+        guarantorSpecialRemarks: 'Guarantor confirmed facility awareness. No issues raised.',
+      }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
@@ -46,6 +120,20 @@ export default function KycForm({
 
   return (
     <form onSubmit={handleSubmit} className="kyc-form-layout">
+      {/* Quick Fill Banner */}
+      <div className="qf-banner">
+        <div className="qf-banner-left">
+          <Zap size={14} />
+          <span>Dev Utility</span>
+          <span className="qf-sep">·</span>
+          <span className="qf-hint">Populate all fields with realistic sample data for testing</span>
+        </div>
+        <button type="button" className="quick-fill-btn" onClick={handleQuickFill}>
+          <Zap size={13} />
+          ⚡ Quick Fill {mode === 'guarantor' ? 'Guarantor' : 'Customer'}
+        </button>
+      </div>
+
       {/* Section 1: Core Identifiers */}
       <div className="card module-card">
         <div className="module-header">
@@ -411,6 +499,53 @@ export default function KycForm({
       </div>
 
       <style>{`
+        /* Quick Fill Banner */
+        .qf-banner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          padding: 0.75rem 1.25rem;
+          border-radius: 10px;
+          border: 1px dashed hsl(262, 70%, 72%);
+          background: linear-gradient(135deg, hsl(262, 100%, 98%) 0%, hsl(240, 100%, 98%) 100%);
+          flex-wrap: wrap;
+        }
+        .qf-banner-left {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: hsl(262, 60%, 50%);
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .qf-sep { opacity: 0.4; }
+        .qf-hint { font-weight: 500; text-transform: none; color: hsl(262, 40%, 55%); letter-spacing: 0; }
+        .quick-fill-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.45rem 1rem;
+          border-radius: 8px;
+          border: 1px solid hsl(262, 70%, 72%);
+          background: hsl(262, 80%, 60%);
+          color: #fff;
+          font-size: 0.72rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          white-space: nowrap;
+        }
+        .quick-fill-btn:hover {
+          background: hsl(262, 80%, 50%);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 14px hsla(262, 80%, 55%, 0.4);
+        }
+
         .kyc-form-layout { display: flex; flex-direction: column; gap: 2rem; }
         .module-card { padding: 2rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }

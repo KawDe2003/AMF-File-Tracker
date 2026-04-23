@@ -16,7 +16,6 @@ export async function GET(request: Request) {
     
     let files;
     
-    if (search) {
       files = await prisma.file.findMany({
         where: {
           ...baseWhere,
@@ -31,7 +30,20 @@ export async function GET(request: Request) {
             { id: { contains: search } },
           ]
         },
-        include: { currentDept: true }
+        select: {
+          id: true,
+          title: true,
+          nic: true,
+          fileType: true,
+          status: true,
+          createdAt: true,
+          currentDept: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
       });
     } else {
       // For list view, handle explicit agent filtering for Admins
@@ -44,10 +56,22 @@ export async function GET(request: Request) {
         finalWhere.currentUserId = filterAgentId;
       }
 
-
       files = await prisma.file.findMany({
         where: finalWhere,
-        include: { currentDept: true },
+        select: {
+          id: true,
+          title: true,
+          nic: true,
+          fileType: true,
+          status: true,
+          createdAt: true,
+          currentDept: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
         orderBy: { createdAt: 'desc' }
       });
     }

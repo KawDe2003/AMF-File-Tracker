@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Zap as ZapIcon } from 'lucide-react';
 import {
   Building2,
   Hash,
@@ -43,6 +44,25 @@ export default function CoreRegistrationForm({
     title: initialData.title || '',
   });
 
+  const handleQuickFill = () => {
+    const rand = Math.floor(Math.random() * 900) + 100;
+    setFormData((prev: any) => ({
+      ...prev,
+      financeCompany: 'AMF',
+      tagNo: `APR/${rand}`,
+      blNo: `BL-${rand}${rand}`,
+      vehicleNo: `BHE-${rand}`,
+      engineNo: `E-TY${rand}ZX`,
+      chassisNo: `C-HN${rand}KL`,
+      nic: `${rand}${rand}${rand}${rand}V`,
+      title: 'Kamal Perera',
+      branchCode: 'METRO',
+      marketingOfficer: 'Nimal Silva',
+      priority: 'MEDIUM',
+      fileType: 'LEASING',
+    }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
@@ -61,9 +81,20 @@ export default function CoreRegistrationForm({
             <h3 className="text-gradient">File Registration</h3>
             <p className="fh-meta">Enter mandatory identifiers to establish system record.</p>
           </div>
-          <div className="fh-indicator">
-            <Zap size={14} />
-            <span>High Impact</span>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={handleQuickFill}
+              className="quick-fill-btn"
+              title="Auto-fill with sample data for testing"
+            >
+              <ZapIcon size={13} />
+              Quick Fill
+            </button>
+            <div className="fh-indicator">
+              <Zap size={14} />
+              <span>High Impact</span>
+            </div>
           </div>
         </div>
 
@@ -180,6 +211,29 @@ export default function CoreRegistrationForm({
       </div>
 
       <style>{`
+        .quick-fill-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.35rem 0.85rem;
+          border-radius: 8px;
+          border: 1px dashed hsl(262, 80%, 65%);
+          background: hsl(262, 100%, 97%);
+          color: hsl(262, 70%, 45%);
+          font-size: 0.72rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          transition: all 0.18s ease;
+        }
+        .quick-fill-btn:hover {
+          background: hsl(262, 80%, 65%);
+          color: #fff;
+          border-color: transparent;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px hsla(262, 80%, 65%, 0.35);
+        }
         .premium-form-container {
           display: flex;
           flex-direction: column;

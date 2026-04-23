@@ -151,6 +151,12 @@ model File {
   currentUser      User?        @relation("CurrentUser", fields: [currentUserId], references: [id])
   
   movements        FileMovement[]
+
+  @@index([status])
+  @@index([nic])
+  @@index([currentDeptId])
+  @@index([currentUserId])
+  @@index([createdAt])
 }
 
 model FileMovement {
@@ -176,6 +182,9 @@ model FileMovement {
   updatedAt        DateTime         @updatedAt
   
   approvals        Approval[]
+
+  @@index([fileId])
+  @@index([createdAt])
 }
 
 model Approval {

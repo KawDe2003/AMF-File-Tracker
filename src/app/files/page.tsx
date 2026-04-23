@@ -1,7 +1,7 @@
 "use client";
 
 import AppLayout from "@/components/layout/AppLayout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -34,6 +34,7 @@ function FileDirectoryContent() {
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(urlSearch);
+  const [searchInput, setSearchInput] = useState(urlSearch);
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -44,6 +45,14 @@ function FileDirectoryContent() {
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'IDENTITY' | 'PROTOCOL'>('OVERVIEW');
 
   const itemsPerPage = 8;
+
+  // Debounce input to actual search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Search/List Fetch
   useEffect(() => {
@@ -98,10 +107,12 @@ function FileDirectoryContent() {
     setCurrentPage(1);
   }, [search, typeFilter, statusFilter]);
 
-  const filteredFiles = files.filter(file => {
-    return (typeFilter === "" || file.fileType === typeFilter) &&
-      (statusFilter === "" || file.status === statusFilter);
-  });
+  const filteredFiles = useMemo(() => {
+    return files.filter(file => {
+      return (typeFilter === "" || file.fileType === typeFilter) &&
+        (statusFilter === "" || file.status === statusFilter);
+    });
+  }, [files, typeFilter, statusFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredFiles.length / itemsPerPage));
   const paginatedFiles = filteredFiles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -143,8 +154,8 @@ function FileDirectoryContent() {
               <input
                 type="text"
                 placeholder="Query by ID, Title, NIC, Engine, Chassis..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="sg-input"
               />
             </div>

@@ -18,25 +18,42 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const totalFiles = await prisma.file.count();
-  const filesAtBranch = await prisma.file.count({
-    where: { status: FileStatus.AT_BRANCH }
-  });
-  const filesInTransit = await prisma.file.count({
-    where: { status: FileStatus.IN_TRANSIT }
-  });
-  const delayedFilesCount = 0;
+  const [totalFiles, filesAtBranch, filesInTransit, recentMovements] = await Promise.all([
+    prisma.file.count(),
+    prisma.file.count({
+      where: { status: FileStatus.AT_BRANCH }
+    }),
+    prisma.file.count({
+      where: { status: FileStatus.IN_TRANSIT }
+    }),
+    prisma.fileMovement.findMany({
+      take: 6,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        file: {
+          select: {
+            id: true,
+            title: true
+          }
+        },
+        toDept: {
+          select: {
+            name: true
+          }
+        },
+        sender: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+  ]);
 
-  const recentMovements = await prisma.fileMovement.findMany({
-    take: 6,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      file: true,
-      fromDept: true,
-      toDept: true,
-      sender: true
-    }
-  });
+  const delayedFilesCount = 0;
 
   return (
     <AppLayout>
