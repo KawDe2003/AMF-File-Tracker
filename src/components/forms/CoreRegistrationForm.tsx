@@ -44,6 +44,8 @@ export default function CoreRegistrationForm({
     title: initialData.title || '',
   });
 
+  const [activeSection, setActiveSection] = useState<'ASSET' | 'IDENTITY' | 'OPS'>('ASSET');
+
   const handleQuickFill = () => {
     const rand = Math.floor(Math.random() * 900) + 100;
     setFormData((prev: any) => ({
@@ -74,246 +76,187 @@ export default function CoreRegistrationForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="premium-form-container">
-      <div className="card card-elevated">
-        <div className="form-header">
-          <div className="fh-text">
-            <h3 className="text-gradient">File Registration</h3>
-            <p className="fh-meta">Enter mandatory identifiers to establish system record.</p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="quick-fill-btn"
-              title="Auto-fill with sample data for testing"
-            >
-              <ZapIcon size={13} />
-              Quick Fill
+    <form onSubmit={handleSubmit} className="registry-form-layout">
+      {/* Left Navigation Sidebar */}
+      <aside className="registry-sidebar">
+        <div className="sidebar-group">
+          <p className="group-label">Registration Flow</p>
+          <nav className="nav-stack">
+            <button type="button" onClick={() => setActiveSection('ASSET')} className={`nav-item ${activeSection === 'ASSET' ? 'active' : ''}`}>
+              <div className="nav-icon"><Car size={16} /></div>
+              <span>Asset Identity</span>
+              {formData.tagNo && formData.vehicleNo && <CheckCircle2 className="done-icon" size={14} />}
             </button>
-            <div className="fh-indicator">
-              <Zap size={14} />
-              <span>High Impact</span>
-            </div>
-          </div>
+            <button type="button" onClick={() => setActiveSection('IDENTITY')} className={`nav-item ${activeSection === 'IDENTITY' ? 'active' : ''}`}>
+              <div className="nav-icon"><User size={16} /></div>
+              <span>Legal Subject</span>
+              {formData.title && formData.nic && <CheckCircle2 className="done-icon" size={14} />}
+            </button>
+            <button type="button" onClick={() => setActiveSection('OPS')} className={`nav-item ${activeSection === 'OPS' ? 'active' : ''}`}>
+              <div className="nav-icon"><Building2 size={16} /></div>
+              <span>Operational Info</span>
+            </button>
+          </nav>
         </div>
 
-        <div className="form-grid">
-          <div className="field-group">
-            <label className="field-label">1. Finance Company <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Building2 className="input-icon" size={16} />
-              <select name="financeCompany" value={formData.financeCompany} onChange={handleChange} className="field-select" required>
-                <option value="AMF">AMF</option>
-                <option value="LB">LB</option>
-              </select>
-            </div>
+        <div className="sidebar-summary card">
+          <p className="summary-title">Summary Preview</p>
+          <div className="summary-data">
+            <div className="s-row"><label>Title:</label><span>{formData.title || '---'}</span></div>
+            <div className="s-row"><label>NIC:</label><span>{formData.nic || '---'}</span></div>
+            <div className="s-row"><label>Vehicle:</label><span>{formData.vehicleNo || '---'}</span></div>
           </div>
+          <button type="button" onClick={handleQuickFill} className="btn-quick-fill">
+            <Zap size={14} /> Quick Populate
+          </button>
+        </div>
+      </aside>
 
-          <div className="field-group">
-            <label className="field-label">2. Tag Number <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Hash className="input-icon" size={16} />
-              <input type="text" name="tagNo" className="field-input" placeholder="Month/REF" value={formData.tagNo} onChange={handleChange} required />
+      {/* Main Form Content */}
+      <div className="registry-main">
+        {activeSection === 'ASSET' && (
+          <div className="section-card card animate-slide-fade">
+            <div className="section-header">
+              <h3 className="text-gradient">Asset Identification</h3>
+              <p>Core identifiers for the physical collateral.</p>
+            </div>
+            <div className="form-grid">
+              <div className="field-group">
+                <label className="field-label">Finance Company <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Building2 className="input-icon" size={16} />
+                  <select name="financeCompany" value={formData.financeCompany} onChange={handleChange} className="field-select" required>
+                    <option value="AMF">AMF</option>
+                    <option value="LB">LB</option>
+                  </select>
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Tag Number <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Hash className="input-icon" size={16} />
+                  <input type="text" name="tagNo" className="field-input" placeholder="Month/REF" value={formData.tagNo} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">BL Number <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Binary className="input-icon" size={16} />
+                  <input type="text" name="blNo" className="field-input" placeholder="BL-XXXXX" value={formData.blNo} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Vehicle No <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Car className="input-icon" size={16} />
+                  <input type="text" name="vehicleNo" className="field-input" placeholder="BHE-1234" value={formData.vehicleNo} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Engine Number <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Cog className="input-icon" size={16} />
+                  <input type="text" name="engineNo" className="field-input" placeholder="E-XXXXXXX" value={formData.engineNo} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Chassis Number <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Cpu className="input-icon" size={16} />
+                  <input type="text" name="chassisNo" className="field-input" placeholder="C-XXXXXXX" value={formData.chassisNo} onChange={handleChange} required />
+                </div>
+              </div>
+            </div>
+            <div className="section-footer">
+              <button type="button" className="btn btn-primary" onClick={() => setActiveSection('IDENTITY')}>Next: Personal Info</button>
             </div>
           </div>
+        )}
 
-          <div className="field-group">
-            <label className="field-label">3. BL Number <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Binary className="input-icon" size={16} />
-              <input type="text" name="blNo" className="field-input" placeholder="BL-XXXXX" value={formData.blNo} onChange={handleChange} required />
+        {activeSection === 'IDENTITY' && (
+          <div className="section-card card animate-slide-fade">
+            <div className="section-header">
+              <h3 className="text-gradient">Personal Profile</h3>
+              <p>Ownership and identity verification data.</p>
+            </div>
+            <div className="form-grid">
+              <div className="field-group full">
+                <label className="field-label">Full Name (Legal Subject) <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <Type className="input-icon" size={16} />
+                  <input type="text" name="title" className="field-input" placeholder="Enter Full Name" value={formData.title} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">National ID (NIC) <span className="req">*</span></label>
+                <div className="input-with-icon">
+                  <UserCircle className="input-icon" size={16} />
+                  <input type="text" name="nic" className="field-input" placeholder="Enter NIC" value={formData.nic} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">File Category</label>
+                <select name="fileType" value={formData.fileType} onChange={handleChange} className="field-select">
+                  <option value="LEASING">Leasing</option>
+                  <option value="CR">CR Book</option>
+                  <option value="LEGAL">Legal</option>
+                </select>
+              </div>
+            </div>
+            <div className="section-footer">
+              <button type="button" className="btn btn-outline" onClick={() => setActiveSection('ASSET')}>Previous</button>
+              <button type="button" className="btn btn-primary" onClick={() => setActiveSection('OPS')}>Next: Operations</button>
             </div>
           </div>
+        )}
 
-          <div className="field-group">
-            <label className="field-label">4. Vehicle No <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Car className="input-icon" size={16} />
-              <input type="text" name="vehicleNo" className="field-input" placeholder="BHE-1234 / U/R" value={formData.vehicleNo} onChange={handleChange} required />
+        {activeSection === 'OPS' && (
+          <div className="section-card card animate-slide-fade">
+            <div className="section-header">
+              <h3 className="text-gradient">Operations & Logistics</h3>
+              <p>Branch allocation and internal routing metadata.</p>
+            </div>
+            <div className="form-grid">
+              <div className="field-group">
+                <label className="field-label">Origin Branch</label>
+                <div className="input-with-icon">
+                  <MapPin className="input-icon" size={16} />
+                  <select name="branchCode" value={formData.branchCode} onChange={handleChange} className="field-select">
+                    {['METRO', 'MTR', 'MIN', 'KOT', 'ANP', 'MLP', 'KND', 'IFU', 'MUL', 'NRM', 'MTU', 'BAU'].map(b => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Marketing Officer</label>
+                <div className="input-with-icon">
+                  <User className="input-icon" size={16} />
+                  <input type="text" name="marketingOfficer" className="field-input" placeholder="Officer Name" value={formData.marketingOfficer} onChange={handleChange} />
+                </div>
+              </div>
+              <div className="field-group">
+                <label className="field-label">Priority Level</label>
+                <select name="priority" value={formData.priority} onChange={handleChange} className="field-select">
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+            </div>
+            <div className="section-footer">
+              <button type="button" className="btn btn-outline" onClick={() => setActiveSection('IDENTITY')}>Previous</button>
+              <button type="submit" className="btn btn-primary btn-glow" disabled={loading}>
+                {loading ? 'Committing...' : 'Finalize & Commit Record'}
+              </button>
             </div>
           </div>
+        )}
 
-          <div className="field-group">
-            <label className="field-label">5. Engine Number <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Cog className="input-icon" size={16} />
-              <input type="text" name="engineNo" className="field-input" placeholder="E-XXXXXXX" value={formData.engineNo} onChange={handleChange} required />
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">6. Chassis Number <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Cpu className="input-icon" size={16} />
-              <input type="text" name="chassisNo" className="field-input" placeholder="C-XXXXXXX" value={formData.chassisNo} onChange={handleChange} required />
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">7. National ID (NIC) <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <UserCircle className="input-icon" size={16} />
-              <input type="text" name="nic" className="field-input" placeholder="Enter NIC" value={formData.nic} onChange={handleChange} required />
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">8. Legal Subject Name <span className="req">*</span></label>
-            <div className="input-with-icon">
-              <Type className="input-icon" size={16} />
-              <input type="text" name="title" className="field-input" placeholder="Full Name" value={formData.title} onChange={handleChange} required />
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">Operational Branch</label>
-            <div className="input-with-icon">
-              <MapPin className="input-icon" size={16} />
-              <select name="branchCode" value={formData.branchCode} onChange={handleChange} className="field-select">
-                {['METRO', 'MTR', 'MIN', 'KOT', 'ANP', 'MLP', 'KND', 'IFU', 'MUL', 'NRM', 'MTU', 'BAU'].map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">Marketing Officer</label>
-            <div className="input-with-icon">
-              <User className="input-icon" size={16} />
-              <input type="text" name="marketingOfficer" className="field-input" placeholder="Full Name" value={formData.marketingOfficer} onChange={handleChange} />
-            </div>
-          </div>
-
-          <div className="field-group">
-            <label className="field-label">Initial Entry Date</label>
-            <div className="input-with-icon">
-              <Calendar className="input-icon" size={16} />
-              <input type="date" name="fileReceivedDate" className="field-input" value={formData.fileReceivedDate} readOnly style={{ opacity: 0.7, background: 'var(--slate-50)' }} />
-            </div>
-          </div>
+        <div className="global-form-actions">
+           <button type="button" className="btn btn-outline" onClick={onCancel} disabled={loading}>Abort Registry</button>
         </div>
       </div>
-
-      <div className="action-row">
-        <button type="button" className="btn btn-outline btn-lg" onClick={onCancel} disabled={loading}>
-          Abort Operation
-        </button>
-        <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-          {loading ? 'Initializing...' : (
-            <>
-              <CheckCircle2 size={18} />
-              Verify & Commit Record
-            </>
-          )}
-        </button>
-      </div>
-
-      <style>{`
-        .quick-fill-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.4rem;
-          padding: 0.35rem 0.85rem;
-          border-radius: 8px;
-          border: 1px dashed hsl(262, 80%, 65%);
-          background: hsl(262, 100%, 97%);
-          color: hsl(262, 70%, 45%);
-          font-size: 0.72rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          cursor: pointer;
-          transition: all 0.18s ease;
-        }
-        .quick-fill-btn:hover {
-          background: hsl(262, 80%, 65%);
-          color: #fff;
-          border-color: transparent;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px hsla(262, 80%, 65%, 0.35);
-        }
-        .premium-form-container {
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-        }
-
-        .form-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 2.5rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid var(--slate-100);
-        }
-
-        .fh-text h3 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .fh-meta { font-size: 0.85rem; color: var(--slate-500); font-weight: 500; }
-
-        .fh-indicator {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: #eff6ff;
-          color: var(--primary-color);
-          padding: 0.4rem 0.8rem;
-          border-radius: 50px;
-          font-size: 0.7rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border: 1px solid #dbeafe;
-        }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.5rem;
-        }
-
-        @media (max-width: 640px) {
-          .form-grid { grid-template-columns: 1fr; }
-        }
-
-        .input-with-icon {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 0.85rem;
-          color: var(--slate-400);
-          pointer-events: none;
-        }
-
-        .input-with-icon .field-input,
-        .input-with-icon .field-select {
-          padding-left: 2.75rem;
-        }
-
-        .req { color: var(--danger-color); font-weight: 800; margin-left: 2px; }
-
-        .action-row {
-          display: flex;
-          justify-content: flex-end;
-          gap: 1rem;
-        }
-
-        .btn-lg {
-          padding: 0.85rem 2.5rem;
-          border-radius: 14px;
-          font-size: 0.95rem;
-        }
-
-        @media (max-width: 480px) {
-          .action-row { flex-direction: column; width: 100%; justify-content: stretch; }
-          .action-row button { width: 100%; }
-        }
-      `}</style>
     </form>
   );
 }

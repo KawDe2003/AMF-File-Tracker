@@ -147,18 +147,27 @@ function FileDirectoryContent() {
           </Link>
         </div>
 
+        <div className="search-hero">
+          <div className="search-main-group">
+            <Search className="search-hero-icon" size={20} />
+            <input
+              type="text"
+              placeholder="Deep Query: NIC, Vehicle No, Engine/Chassis or Ref ID..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="search-hero-input"
+            />
+            {loading && <Loader2 className="animate-spin text-primary" size={20} style={{ marginRight: '1rem' }} />}
+          </div>
+          <div className="search-badges">
+            <span className="search-tag">Multi-Attribute Enabled</span>
+            <span className="search-tag">Real-time Sync</span>
+            {search && <span className="search-tag" style={{ background: 'var(--sapphire-600)', color: 'white' }}>Query: {search}</span>}
+          </div>
+        </div>
+
         <div className="card explorer-card">
           <div className="explorer-filters">
-            <div className="search-group">
-              <Search className="sg-icon" size={16} />
-              <input
-                type="text"
-                placeholder="Query by ID, Title, NIC, Engine, Chassis..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="sg-input"
-              />
-            </div>
 
             <div className="filter-stack">
               <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="fs-select">
