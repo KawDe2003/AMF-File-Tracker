@@ -23,13 +23,14 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifyOpen, setNotifyOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.ok ? r.json() : null)
       .then((data) => setSessionUser(data))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const handleSearch = (e: React.KeyboardEvent) => {
@@ -78,10 +79,25 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           <span className="status-text">Core Active</span>
         </div>
 
-        <button className="notify-trigger" onClick={() => {}}>
-          <Bell size={20} strokeWidth={2} />
-          <span className="notify-badge" />
-        </button>
+        <div className="notify-dropdown-wrap" style={{ position: 'relative' }}>
+          <button className="notify-trigger" onClick={() => setNotifyOpen(!notifyOpen)}>
+            <Bell size={20} strokeWidth={2} />
+            <span className="notify-badge" />
+          </button>
+
+          {notifyOpen && (
+            <div className="notify-menu">
+              <div className="nm-header">
+                <h4>System Alerts</h4>
+                <span className="nm-clear" onClick={() => setNotifyOpen(false)}>Dismiss</span>
+              </div>
+              <div className="nm-divider" />
+              <div className="nm-item empty">
+                <p>No new alerts pending.</p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Profile Dropdown */}
         <div className="profile-dropdown-wrap">
@@ -172,6 +188,19 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         .notify-trigger { position: relative; background: none; border: none; color: var(--slate-400); cursor: pointer; transition: all 0.2s; display: flex; }
         .notify-trigger:hover { color: var(--primary-color); }
         .notify-badge { position: absolute; top: -2px; right: -2px; width: 9px; height: 9px; background: var(--danger-color); border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px var(--danger-color); }
+        
+        .notify-menu {
+          position: absolute; right: -0.5rem; top: calc(100% + 1rem);
+          background: white; border: 1px solid var(--slate-200); border-radius: 14px;
+          padding: 1rem; min-width: 280px; z-index: 500;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+          animation: menuIn 0.2s cubic-bezier(0.16,1,0.3,1);
+        }
+        .nm-header { display: flex; justify-content: space-between; align-items: center; }
+        .nm-header h4 { font-size: 0.9rem; margin: 0; color: var(--slate-900); }
+        .nm-clear { font-size: 0.7rem; color: var(--primary-color); font-weight: 700; cursor: pointer; }
+        .nm-divider { height: 1px; background: var(--slate-100); margin: 0.75rem -1rem; }
+        .nm-item.empty { padding: 1.5rem 1rem; text-align: center; color: var(--slate-500); font-size: 0.8rem; font-weight: 500; }
 
         /* Profile Dropdown */
         .profile-dropdown-wrap { position: relative; }
