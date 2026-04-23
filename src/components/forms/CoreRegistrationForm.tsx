@@ -46,24 +46,31 @@ export default function CoreRegistrationForm({
 
   const [activeSection, setActiveSection] = useState<'ASSET' | 'IDENTITY' | 'OPS'>('ASSET');
 
-  const handleQuickFill = () => {
-    const rand = Math.floor(Math.random() * 900) + 100;
-    setFormData((prev: any) => ({
-      ...prev,
-      financeCompany: 'AMF',
-      tagNo: `APR/${rand}`,
-      blNo: `BL-${rand}${rand}`,
-      vehicleNo: `BHE-${rand}`,
-      engineNo: `E-TY${rand}ZX`,
-      chassisNo: `C-HN${rand}KL`,
-      nic: `${rand}${rand}${rand}${rand}V`,
-      title: 'Kamal Perera',
-      branchCode: 'METRO',
-      marketingOfficer: 'Nimal Silva',
-      priority: 'MEDIUM',
-      fileType: 'LEASING',
-    }));
-  };
+  const [recentFiles, setRecentFiles] = useState<any[]>([]);
+  const [duplicates, setDuplicates] = useState<{ tagNo: boolean, vehicleNo: boolean }>({ tagNo: false, vehicleNo: false });
+
+  useEffect(() => {
+    // Fetch last 3 files registered by this user
+    fetch('/api/files?limit=3').then(r => r.json()).then(data => {
+      setRecentFiles(Array.isArray(data) ? data.slice(0, 3) : []);
+    }).catch(() => {});
+  }, []);
+
+  // Duplicate Check Logic
+  useEffect(() => {
+    const checkDuplicates = async () => {
+      if (formData.tagNo.length < 3 && formData.vehicleNo.length < 3) return;
+      
+      try {
+        const res = await fetch(`/api/files/check-duplicates?tagNo=${formData.tagNo}&vehicleNo=${formData.vehicleNo}`);
+        const data = await res.json();
+        setDuplicates(data);
+      } catch (err) {}
+    };
+
+    const timer = setTimeout(checkDuplicates, 500);
+    return () => clearTimeout(timer);
+  }, [formData.tagNo, formData.vehicleNo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -100,15 +107,17 @@ export default function CoreRegistrationForm({
         </div>
 
         <div className="sidebar-summary card">
-          <p className="summary-title">Summary Preview</p>
-          <div className="summary-data">
-            <div className="s-row"><label>Title:</label><span>{formData.title || '---'}</span></div>
-            <div className="s-row"><label>NIC:</label><span>{formData.nic || '---'}</span></div>
-            <div className="s-row"><label>Vehicle:</label><span>{formData.vehicleNo || '---'}</span></div>
+          <p className="summary-title">Recently Registered</p>
+          <div className="recent-list">
+            {recentFiles.length > 0 ? recentFiles.map(rf => (
+              <div key={rf.id} className="recent-item">
+                <p className="ri-title">{rf.title || 'Untitled'}</p>
+                <p className="ri-meta">{rf.tagNo || 'No Tag'}</p>
+              </div>
+            )) : (
+              <p className="empty-msg">No recent entries found.</p>
+            )}
           </div>
-          <button type="button" onClick={handleQuickFill} className="btn-quick-fill">
-            <Zap size={14} /> Quick Populate
-          </button>
         </div>
       </aside>
 
@@ -134,9 +143,18 @@ export default function CoreRegistrationForm({
               <div className="field-group">
                 <label className="field-label">Tag Number <span className="req">*</span></label>
                 <div className="input-with-icon">
-                  <Hash className="input-icon" size={16} />
-                  <input type="text" name="tagNo" className="field-input" placeholder="Month/REF" value={formData.tagNo} onChange={handleChange} required />
+                  <Hash className={`input-icon ${duplicates.tagNo ? 'text-danger' : ''}`} size={16} />
+                  <input 
+                    type="text" 
+                    name="tagNo" 
+                    className={`field-input ${duplicates.tagNo ? 'border-danger' : ''}`} 
+                    placeholder="Month/REF" 
+                    value={formData.tagNo} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
+                {duplicates.tagNo && <p className="field-error">Warning: This Tag No already exists!</p>}
               </div>
               <div className="field-group">
                 <label className="field-label">BL Number <span className="req">*</span></label>
@@ -148,9 +166,18 @@ export default function CoreRegistrationForm({
               <div className="field-group">
                 <label className="field-label">Vehicle No <span className="req">*</span></label>
                 <div className="input-with-icon">
-                  <Car className="input-icon" size={16} />
-                  <input type="text" name="vehicleNo" className="field-input" placeholder="BHE-1234" value={formData.vehicleNo} onChange={handleChange} required />
+                  <Car className={`input-icon ${duplicates.vehicleNo ? 'text-danger' : ''}`} size={16} />
+                  <input 
+                    type="text" 
+                    name="vehicleNo" 
+                    className={`field-input ${duplicates.vehicleNo ? 'border-danger' : ''}`} 
+                    placeholder="BHE-1234" 
+                    value={formData.vehicleNo} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
+                {duplicates.vehicleNo && <p className="field-error">Warning: Vehicle No already registered!</p>}
               </div>
               <div className="field-group">
                 <label className="field-label">Engine Number</label>

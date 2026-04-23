@@ -539,3 +539,48 @@ h1, h2, h3, h4 {
   .nav-stack { flex-direction: row; overflow-x: auto; padding-bottom: 0.5rem; }
   .nav-item { flex-shrink: 0; width: auto; }
 }
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recent-item {
+  padding: 0.75rem;
+  background: var(--slate-50);
+  border-radius: 8px;
+  border-left: 3px solid var(--sapphire-500);
+}
+
+.ri-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin-bottom: 0.15rem;
+}
+
+.ri-meta {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+.empty-msg {
+  font-size: 0.7rem;
+  color: var(--slate-400);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.field-error {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--danger-color);
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.border-danger { border-color: var(--danger-color) !important; }
+.text-danger { color: var(--danger-color) !important; }
