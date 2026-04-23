@@ -43,6 +43,7 @@ export default function CoreRegistrationForm({
     marketingOfficer: initialData.marketingOfficer || '',
     priority: initialData.priority || 'MEDIUM',
     title: initialData.title || '',
+    regUnreg: initialData.regUnreg || 'REGISTERED',
   });
 
   const [activeSection, setActiveSection] = useState<'ASSET' | 'IDENTITY' | 'OPS'>('ASSET');
@@ -141,6 +142,35 @@ export default function CoreRegistrationForm({
                   </select>
                 </div>
               </div>
+
+              <div className="field-group">
+                <label className="field-label">Vehicle Condition</label>
+                <div className="input-with-icon">
+                  <Layout className="input-icon" size={16} />
+                  <select name="regUnreg" value={formData.regUnreg} onChange={handleChange} className="field-select">
+                    <option value="REGISTERED">Used / Registered</option>
+                    <option value="UNREGISTERED">Brand New / Unregistered</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="field-group">
+                <label className="field-label">Vehicle No {formData.regUnreg === 'REGISTERED' && <span className="req">*</span>}</label>
+                <div className="input-with-icon">
+                  <Car className={`input-icon ${duplicates.vehicleNo ? 'text-danger' : ''}`} size={16} />
+                  <input 
+                    type="text" 
+                    name="vehicleNo" 
+                    className={`field-input ${duplicates.vehicleNo ? 'border-danger' : ''}`} 
+                    placeholder={formData.regUnreg === 'REGISTERED' ? "BHE-1234" : "U/R (Auto)"} 
+                    value={formData.vehicleNo} 
+                    onChange={handleChange} 
+                    required={formData.regUnreg === 'REGISTERED'}
+                  />
+                </div>
+                {duplicates.vehicleNo && <p className="field-error">Warning: Vehicle No already registered!</p>}
+              </div>
+
               <div className="field-group">
                 <label className="field-label">Tag Number <span className="req">*</span></label>
                 <div className="input-with-icon">
@@ -157,6 +187,7 @@ export default function CoreRegistrationForm({
                 </div>
                 {duplicates.tagNo && <p className="field-error">Warning: This Tag No already exists!</p>}
               </div>
+
               <div className="field-group">
                 <label className="field-label">BL Number <span className="req">*</span></label>
                 <div className="input-with-icon">
@@ -164,22 +195,7 @@ export default function CoreRegistrationForm({
                   <input type="text" name="blNo" className="field-input" placeholder="BL-XXXXX" value={formData.blNo} onChange={handleChange} required />
                 </div>
               </div>
-              <div className="field-group">
-                <label className="field-label">Vehicle No <span className="req">*</span></label>
-                <div className="input-with-icon">
-                  <Car className={`input-icon ${duplicates.vehicleNo ? 'text-danger' : ''}`} size={16} />
-                  <input 
-                    type="text" 
-                    name="vehicleNo" 
-                    className={`field-input ${duplicates.vehicleNo ? 'border-danger' : ''}`} 
-                    placeholder="BHE-1234" 
-                    value={formData.vehicleNo} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                </div>
-                {duplicates.vehicleNo && <p className="field-error">Warning: Vehicle No already registered!</p>}
-              </div>
+
               <div className="field-group">
                 <label className="field-label">Engine Number</label>
                 <div className="input-with-icon">
