@@ -2,13 +2,13 @@ import AppLayout from "@/components/layout/AppLayout";
 import prisma from "@/lib/prisma";
 import { FileStatus } from "@prisma/client";
 import Link from 'next/link';
-import { 
-  BarChart3, 
-  Files, 
-  Truck, 
-  AlertCircle, 
-  Activity, 
-  Zap, 
+import {
+  BarChart3,
+  Files,
+  Truck,
+  AlertCircle,
+  Activity,
+  Zap,
   ArrowUpRight,
   ShieldCheck,
   Search,
@@ -25,7 +25,7 @@ export default async function Home() {
   const filesInTransit = await prisma.file.count({
     where: { status: FileStatus.IN_TRANSIT }
   });
-  const delayedFilesCount = 0; 
+  const delayedFilesCount = 0;
 
   const recentMovements = await prisma.fileMovement.findMany({
     take: 6,
@@ -143,7 +143,7 @@ export default async function Home() {
                   <div className="feed-indicator sapphire" />
                   <div className="feed-body glass-slate">
                     <div className="feed-header">
-                      <span className="file-id">ID: {m.file.id.substring(0,6).toUpperCase()}</span>
+                      <span className="file-id">ID: {m.file.id.substring(0, 6).toUpperCase()}</span>
                       <span className="file-name">{m.file.title}</span>
                     </div>
                     <p className="feed-msg">
@@ -278,6 +278,12 @@ export default async function Home() {
             .hero-controls { width: 100%; }
             .hero-controls a { flex: 1; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          }
+          
+          @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 1.2rem; }
+            .hero-controls { flex-direction: column; }
           }
         `}</style>
       </div>

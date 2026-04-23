@@ -199,6 +199,12 @@ export default function LoginPage() {
           to { opacity: 1; transform: translateY(0); }
         }
 
+        @media (max-width: 480px) {
+          .login-shell { padding: 1rem; }
+          .login-card { padding: 1.5rem; }
+          .brand-title { font-size: 1rem; }
+        }
+
         .login-brand {
           display: flex;
           align-items: center;

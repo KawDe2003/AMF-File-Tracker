@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { 
-  Building2, 
-  Hash, 
-  Binary, 
-  Car, 
-  Cog, 
-  Cpu, 
-  User, 
-  Type, 
-  MapPin, 
+import {
+  Building2,
+  Hash,
+  Binary,
+  Car,
+  Cog,
+  Cpu,
+  User,
+  Type,
+  MapPin,
   UserCircle,
   Zap,
   CheckCircle2,
@@ -22,11 +22,11 @@ interface CoreRegistrationFormProps {
   loading?: boolean;
 }
 
-export default function CoreRegistrationForm({ 
-  initialData, 
-  onSubmit, 
-  onCancel, 
-  loading 
+export default function CoreRegistrationForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  loading
 }: CoreRegistrationFormProps) {
   const [formData, setFormData] = useState({
     ...initialData,
@@ -66,7 +66,7 @@ export default function CoreRegistrationForm({
             <span>High Impact</span>
           </div>
         </div>
-        
+
         <div className="form-grid">
           <div className="field-group">
             <label className="field-label">1. Finance Company <span className="req">*</span></label>
@@ -166,17 +166,17 @@ export default function CoreRegistrationForm({
       </div>
 
       <div className="action-row">
-         <button type="button" className="btn btn-outline btn-lg" onClick={onCancel} disabled={loading}>
-           Abort Operation
-         </button>
-         <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-           {loading ? 'Initializing...' : (
-             <>
-               <CheckCircle2 size={18} />
-               Verify & Commit Record
-             </>
-           )}
-         </button>
+        <button type="button" className="btn btn-outline btn-lg" onClick={onCancel} disabled={loading}>
+          Abort Operation
+        </button>
+        <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+          {loading ? 'Initializing...' : (
+            <>
+              <CheckCircle2 size={18} />
+              Verify & Commit Record
+            </>
+          )}
+        </button>
       </div>
 
       <style>{`
@@ -253,6 +253,11 @@ export default function CoreRegistrationForm({
           padding: 0.85rem 2.5rem;
           border-radius: 14px;
           font-size: 0.95rem;
+        }
+
+        @media (max-width: 480px) {
+          .action-row { flex-direction: column; width: 100%; justify-content: stretch; }
+          .action-row button { width: 100%; }
         }
       `}</style>
     </form>
