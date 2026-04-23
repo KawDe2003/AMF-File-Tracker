@@ -42,7 +42,7 @@ model File {
   
   // Core identifiers (from screenshot header)
   financeCompany   String?      // Field 1: LB / AMF
-  title            String       // Customer Name (file label)
+  title            String?      // Customer Name (file label)
   leasingCRNo      String?      // Field 2: Deprecated in favor of tagNo/blNo
   tagNo            String?      // New Split Field
   blNo             String?      // New Split Field
@@ -54,7 +54,7 @@ model File {
 
   // Internal tracking (kept from original schema)
   fileType         FileType
-  nic              String       // Field 6: National ID / Passport Number
+  nic              String?      // Field 6: National ID / Passport Number
   priority         Priority     @default(LOW)
   status           FileStatus   @default(AT_BRANCH)
   createdAt        DateTime     @default(now())

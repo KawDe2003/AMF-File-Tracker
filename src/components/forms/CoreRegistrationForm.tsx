@@ -153,17 +153,17 @@ export default function CoreRegistrationForm({
                 </div>
               </div>
               <div className="field-group">
-                <label className="field-label">Engine Number <span className="req">*</span></label>
+                <label className="field-label">Engine Number</label>
                 <div className="input-with-icon">
                   <Cog className="input-icon" size={16} />
-                  <input type="text" name="engineNo" className="field-input" placeholder="E-XXXXXXX" value={formData.engineNo} onChange={handleChange} required />
+                  <input type="text" name="engineNo" className="field-input" placeholder="E-XXXXXXX" value={formData.engineNo} onChange={handleChange} />
                 </div>
               </div>
               <div className="field-group">
-                <label className="field-label">Chassis Number <span className="req">*</span></label>
+                <label className="field-label">Chassis Number</label>
                 <div className="input-with-icon">
                   <Cpu className="input-icon" size={16} />
-                  <input type="text" name="chassisNo" className="field-input" placeholder="C-XXXXXXX" value={formData.chassisNo} onChange={handleChange} required />
+                  <input type="text" name="chassisNo" className="field-input" placeholder="C-XXXXXXX" value={formData.chassisNo} onChange={handleChange} />
                 </div>
               </div>
             </div>
@@ -181,17 +181,17 @@ export default function CoreRegistrationForm({
             </div>
             <div className="form-grid">
               <div className="field-group full">
-                <label className="field-label">Full Name (Legal Subject) <span className="req">*</span></label>
+                <label className="field-label">Full Name (Legal Subject)</label>
                 <div className="input-with-icon">
                   <Type className="input-icon" size={16} />
-                  <input type="text" name="title" className="field-input" placeholder="Enter Full Name" value={formData.title} onChange={handleChange} required />
+                  <input type="text" name="title" className="field-input" placeholder="Enter Full Name" value={formData.title} onChange={handleChange} />
                 </div>
               </div>
               <div className="field-group">
-                <label className="field-label">National ID (NIC) <span className="req">*</span></label>
+                <label className="field-label">National ID (NIC)</label>
                 <div className="input-with-icon">
                   <UserCircle className="input-icon" size={16} />
-                  <input type="text" name="nic" className="field-input" placeholder="Enter NIC" value={formData.nic} onChange={handleChange} required />
+                  <input type="text" name="nic" className="field-input" placeholder="Enter NIC" value={formData.nic} onChange={handleChange} />
                 </div>
               </div>
               <div className="field-group">
