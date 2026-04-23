@@ -40,7 +40,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+    const body = Object.fromEntries(
+      Object.entries(rawBody).map(([key, value]) => [key, value === "" ? null : value])
+    );
     const { id } = await params;
 
     const updatedFile = await prisma.file.update({
