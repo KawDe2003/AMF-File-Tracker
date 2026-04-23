@@ -5,22 +5,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { 
-  Search, 
-  Plus, 
-  MapPin, 
-  Clock, 
-  ShieldCheck, 
-  Info, 
-  User, 
-  History, 
-  Layout, 
+import {
+  Search,
+  Plus,
+  MapPin,
+  Clock,
+  ShieldCheck,
+  Info,
+  User,
+  History,
+  Layout,
   CornerDownRight,
   ChevronRight,
   TrendingUp,
   Map,
   FileText,
-  Loader2
+  Loader2,
+  Building2,
+  Users
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -28,19 +30,19 @@ export const dynamic = "force-dynamic";
 function FileDirectoryContent() {
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get('search') || "";
-  
+
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(urlSearch);
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [fileDetails, setFileDetails] = useState<any | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'IDENTITY' | 'PROTOCOL'>('OVERVIEW');
-  
+
   const itemsPerPage = 8;
 
   // Search/List Fetch
@@ -49,7 +51,7 @@ function FileDirectoryContent() {
       try {
         const query = new URLSearchParams();
         if (search) query.append('q', search);
-        
+
         const res = await fetch(`/api/files?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
@@ -60,7 +62,7 @@ function FileDirectoryContent() {
         setLoading(false);
       }
     }
-    
+
     setLoading(true);
     const timer = setTimeout(fetchFiles, 300);
     return () => clearTimeout(timer);
@@ -98,14 +100,14 @@ function FileDirectoryContent() {
 
   const filteredFiles = files.filter(file => {
     return (typeFilter === "" || file.fileType === typeFilter) &&
-           (statusFilter === "" || file.status === statusFilter);
+      (statusFilter === "" || file.status === statusFilter);
   });
 
   const totalPages = Math.max(1, Math.ceil(filteredFiles.length / itemsPerPage));
   const paginatedFiles = filteredFiles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const getStatusBadge = (status: string) => {
-    switch(status) {
+    switch (status) {
       case 'AT_BRANCH': return <span className="fit-badge success">At Branch</span>;
       case 'IN_TRANSIT': return <span className="fit-badge warning">In Transit</span>;
       case 'COMPLETED': return <span className="fit-badge primary">Completed</span>;
@@ -138,15 +140,15 @@ function FileDirectoryContent() {
           <div className="explorer-filters">
             <div className="search-group">
               <Search className="sg-icon" size={16} />
-              <input 
-                type="text" 
-                placeholder="Query by ID, Title, NIC, Engine, Chassis..." 
+              <input
+                type="text"
+                placeholder="Query by ID, Title, NIC, Engine, Chassis..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="sg-input"
               />
             </div>
-            
+
             <div className="filter-stack">
               <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="fs-select">
                 <option value="">All Categories</option>
@@ -154,7 +156,7 @@ function FileDirectoryContent() {
                 <option value="LEASING">Leasing Files</option>
                 <option value="LEGAL">Legal Documents</option>
               </select>
-              
+
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="fs-select">
                 <option value="">All Statuses</option>
                 <option value="AT_BRANCH">At Branch</option>
@@ -210,10 +212,10 @@ function FileDirectoryContent() {
                     </td>
                     <td>{getStatusBadge(file.status)}</td>
                     <td>
-                      <button 
-                         className="btn btn-outline btn-icon" 
-                         title="Open Information Terminal"
-                         onClick={() => setSelectedFileId(file.id)}
+                      <button
+                        className="btn btn-outline btn-icon"
+                        title="Open Information Terminal"
+                        onClick={() => setSelectedFileId(file.id)}
                       >
                         <ChevronRight size={18} />
                       </button>
@@ -225,11 +227,11 @@ function FileDirectoryContent() {
           </div>
 
           <div className="explorer-footer">
-            <p className="footer-stats">Displaying records <strong>{(currentPage-1)*itemsPerPage + 1}</strong> - <strong>{Math.min(currentPage*itemsPerPage, filteredFiles.length)}</strong> of <strong>{filteredFiles.length}</strong> total</p>
+            <p className="footer-stats">Displaying records <strong>{(currentPage - 1) * itemsPerPage + 1}</strong> - <strong>{Math.min(currentPage * itemsPerPage, filteredFiles.length)}</strong> of <strong>{filteredFiles.length}</strong> total</p>
             <div className="pagination-group">
               <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="pg-btn">Prev</button>
               {Array.from({ length: totalPages }).map((_, i) => (
-                 <button key={i} className={`pg-btn ${currentPage === i + 1 ? 'active' : ''}`} onClick={() => setCurrentPage(i+1)}>{i+1}</button>
+                <button key={i} className={`pg-btn ${currentPage === i + 1 ? 'active' : ''}`} onClick={() => setCurrentPage(i + 1)}>{i + 1}</button>
               ))}
               <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="pg-btn">Next</button>
             </div>
@@ -238,178 +240,207 @@ function FileDirectoryContent() {
 
         {/* FACILITY INFORMATION MODAL (FIT) */}
         {selectedFileId && (
-           <div className="fit-backdrop" onClick={() => setSelectedFileId(null)}>
-              <div className="fit-terminal card" onClick={e => e.stopPropagation()}>
-                 <div className="fit-header">
-                    <div className="fit-title-group">
-                       <h2 className="fit-title">Facility Information Terminal</h2>
-                       <div className="fit-id-badge">ID: {selectedFileId.toUpperCase()}</div>
-                    </div>
-                    <button className="fit-close" onClick={() => setSelectedFileId(null)}>×</button>
-                 </div>
-
-                 {detailsLoading ? (
-                    <div className="fit-loading-state">
-                       <div className="loader-pulse sapphire" />
-                       <p>Retrieving Secure Protocol Data...</p>
-                    </div>
-                 ) : fileDetails && (
-                    <>
-                       <div className="fit-tabs">
-                          <button className={`fit-tab ${activeTab === 'OVERVIEW' ? 'active' : ''}`} onClick={() => setActiveTab('OVERVIEW')}>
-                             <Layout size={16} /> Strategic Overview
-                          </button>
-                          <button className={`fit-tab ${activeTab === 'IDENTITY' ? 'active' : ''}`} onClick={() => setActiveTab('IDENTITY')}>
-                             <User size={16} /> Identity Profile
-                          </button>
-                          <button className={`fit-tab ${activeTab === 'PROTOCOL' ? 'active' : ''}`} onClick={() => setActiveTab('PROTOCOL')}>
-                             <History size={16} /> Protocol History
-                          </button>
-                       </div>
-
-                       <div className="fit-body">
-                          {/* OVERVIEW TAB */}
-                          {activeTab === 'OVERVIEW' && (
-                             <div className="tab-pane overview-pane animate-slide-fade">
-                                <div className="pane-grid">
-                                   <div className="fit-section">
-                                      <h3><Info size={14} /> Core Registry</h3>
-                                      <div className="field-grid">
-                                         <DataRow label="Finance Co" value={fileDetails.financeCompany} />
-                                         <DataRow label="File Received" value={fileDetails.fileReceivedDate} />
-                                         <DataRow label="Tag Number" value={fileDetails.tagNo} />
-                                         <DataRow label="BL Number" value={fileDetails.blNo} />
-                                         <DataRow label="Vehicle No" value={fileDetails.vehicleNo} />
-                                         <DataRow label="Reg Status" value={fileDetails.regUnreg} />
-                                      </div>
-                                   </div>
-
-                                   <div className="fit-section">
-                                      <h3><ShieldCheck size={14} /> Operational Metadata</h3>
-                                      <div className="field-grid">
-                                         <DataRow label="File Type" value={fileDetails.fileType} />
-                                         <DataRow label="Priority" value={fileDetails.priority} />
-                                         <DataRow label="Marketing Officer" value={fileDetails.marketingOfficer} />
-                                         <DataRow label="Branch Code" value={fileDetails.branchCode} />
-                                      </div>
-                                   </div>
-
-                                   <div className="fit-section full">
-                                      <h3><TrendingUp size={14} /> Verification Protocol Status</h3>
-                                      <div className="verification-matrix">
-                                         <div className="vm-node">
-                                            <label>Client Validation</label>
-                                            <div className={`status-pill ${fileDetails.customerStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                                               {fileDetails.customerStatus || 'NOT_STARTED'}
-                                            </div>
-                                         </div>
-                                         <div className="vm-node">
-                                            <label>Guarantor Validation</label>
-                                            <div className={`status-pill ${fileDetails.guarantorStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                                               {fileDetails.guarantorStatus || 'NOT_STARTED'}
-                                            </div>
-                                         </div>
-                                         <div className="vm-node">
-                                            <label>Security Audit</label>
-                                            <div className={`status-pill ${fileDetails.thirdPartyStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
-                                               {fileDetails.thirdPartyStatus || 'PENDING'}
-                                            </div>
-                                         </div>
-                                      </div>
-                                   </div>
-                                </div>
-                             </div>
-                          )}
-
-                          {/* IDENTITY TAB */}
-                          {activeTab === 'IDENTITY' && (
-                             <div className="tab-pane identity-pane animate-slide-fade">
-                                <div className="kyc-scroll-area">
-                                   <div className="kyc-cluster">
-                                      <div className="kyc-header customer">
-                                         <User size={18} />
-                                         <span>Primary Customer KYC Profile</span>
-                                      </div>
-                                      <div className="field-grid">
-                                         <DataRow label="Full Name" value={fileDetails.title} fullWidth />
-                                         <DataRow label="NIC / Passport" value={fileDetails.nic} />
-                                         <DataRow label="Contact Number" value={fileDetails.contactNo} />
-                                         <DataRow label="WhatsApp" value={fileDetails.whatsappNo} />
-                                         <DataRow label="Alt Contact" value={fileDetails.altContactNo} />
-                                         <DataRow label="Best Time to Call" value={fileDetails.bestTimeToCall} />
-                                         <DataRow label="Residence Type" value={fileDetails.residenceType} />
-                                         <DataRow label="Address" value={fileDetails.address} fullWidth />
-                                         <DataRow label="Employment" value={fileDetails.employmentType} />
-                                         <DataRow label="Employer" value={fileDetails.employerName} />
-                                         <DataRow label="Job Title" value={fileDetails.jobTitle} />
-                                         <DataRow label="Eco. Sector" value={fileDetails.economicSector} />
-                                         <DataRow label="Salary Date" value={fileDetails.salaryDate} />
-                                         <DataRow label="Experience" value={fileDetails.workExperience} />
-                                         <DataRow label="Monthly Income" value={fileDetails.monthlyIncome} />
-                                         <DataRow label="Other Income" value={fileDetails.otherIncome} />
-                                      </div>
-                                   </div>
-
-                                   <div className="kyc-cluster" style={{ marginTop: '2rem' }}>
-                                      <div className="kyc-header guarantor">
-                                         <ShieldCheck size={18} />
-                                         <span>Verified Guarantor KYC Profile</span>
-                                      </div>
-                                      <div className="field-grid">
-                                         <DataRow label="NIC / Passport" value={fileDetails.guarantorNic} />
-                                         <DataRow label="Relationship" value={fileDetails.guarantorRelationship} />
-                                         <DataRow label="Contact Number" value={fileDetails.guarantorContactNo} />
-                                         <DataRow label="WhatsApp" value={fileDetails.guarantorWhatsappNo} />
-                                         <DataRow label="Residence Type" value={fileDetails.guarantorResidenceType} />
-                                         <DataRow label="Address" value={fileDetails.guarantorAddress} fullWidth />
-                                         <DataRow label="Employment" value={fileDetails.guarantorEmploymentType} />
-                                         <DataRow label="Employer" value={fileDetails.guarantorEmployerName} />
-                                         <DataRow label="Monthly Income" value={fileDetails.guarantorMonthlyIncome} />
-                                      </div>
-                                   </div>
-                                </div>
-                             </div>
-                          )}
-
-                          {/* PROTOCOL HISTORY TAB */}
-                          {activeTab === 'PROTOCOL' && (
-                             <div className="tab-pane protocol-pane animate-slide-fade">
-                                <div className="timeline">
-                                   {fileDetails.movements?.length === 0 ? (
-                                      <div className="null-timeline">No historical transfers recorded for this facility.</div>
-                                   ) : fileDetails.movements.map((move: any, idx: number) => (
-                                      <div key={move.id} className="timeline-item">
-                                         <div className="tl-line" />
-                                         <div className={`tl-indicator ${idx === 0 ? 'animate-transmission' : ''}`} />
-                                         <div className="tl-body">
-                                            <div className="tl-header">
-                                               <div className="tl-main">
-                                                  <CornerDownRight size={14} className="tl-arrow" />
-                                                  <span>Transferred to <strong>{move.toDept.name}</strong></span>
-                                               </div>
-                                               <span className="tl-date">{new Date(move.createdAt).toLocaleString()}</span>
-                                            </div>
-                                            <div className="tl-meta">
-                                               <span className="tl-user">Sent by: {move.sender.name}</span>
-                                               <span className={`tl-status ${move.status.toLowerCase()}`}>{move.status}</span>
-                                            </div>
-                                            {move.comments && (
-                                               <div className="tl-comments">
-                                                  <Info size={12} />
-                                                  <p>{move.comments}</p>
-                                               </div>
-                                            )}
-                                         </div>
-                                      </div>
-                                   ))}
-                                </div>
-                             </div>
-                          )}
-                       </div>
-                    </>
-                 )}
+          <div className="fit-backdrop" onClick={() => setSelectedFileId(null)}>
+            <div className="fit-terminal card" onClick={e => e.stopPropagation()}>
+              <div className="fit-header">
+                <div className="fit-title-group">
+                  <h2 className="fit-title">Facility Information Terminal</h2>
+                  <div className="fit-id-badge">ID: {selectedFileId.toUpperCase()}</div>
+                </div>
+                <button className="fit-close" onClick={() => setSelectedFileId(null)}>×</button>
               </div>
-           </div>
+
+              {detailsLoading ? (
+                <div className="fit-loading-state">
+                  <div className="loader-pulse sapphire" />
+                  <p>Retrieving Secure Protocol Data...</p>
+                </div>
+              ) : fileDetails && (
+                <>
+                  <div className="fit-tabs">
+                    <button className={`fit-tab ${activeTab === 'OVERVIEW' ? 'active' : ''}`} onClick={() => setActiveTab('OVERVIEW')}>
+                      <Layout size={16} /> Strategic Overview
+                    </button>
+                    <button className={`fit-tab ${activeTab === 'IDENTITY' ? 'active' : ''}`} onClick={() => setActiveTab('IDENTITY')}>
+                      <User size={16} /> Identity Profile
+                    </button>
+                    <button className={`fit-tab ${activeTab === 'PROTOCOL' ? 'active' : ''}`} onClick={() => setActiveTab('PROTOCOL')}>
+                      <History size={16} /> Protocol History
+                    </button>
+                  </div>
+
+                  <div className="fit-body">
+                    {/* OVERVIEW TAB */}
+                    {activeTab === 'OVERVIEW' && (
+                      <div className="tab-pane overview-pane animate-slide-fade">
+                        <div className="pane-grid">
+                          <div className="fit-section">
+                            <h3><Info size={14} /> Core Registry</h3>
+                            <div className="field-grid">
+                              <DataRow label="Finance Co" value={fileDetails.financeCompany} />
+                              <DataRow label="File Received" value={fileDetails.fileReceivedDate} />
+                              <DataRow label="Tag Number" value={fileDetails.tagNo} />
+                              <DataRow label="BL Number" value={fileDetails.blNo} />
+                              <DataRow label="Vehicle No" value={fileDetails.vehicleNo} />
+                              <DataRow label="Reg Status" value={fileDetails.regUnreg} />
+                            </div>
+                          </div>
+
+                          <div className="fit-section">
+                            <h3><ShieldCheck size={14} /> Operational Metadata</h3>
+                            <div className="field-grid">
+                              <DataRow label="File Type" value={fileDetails.fileType} />
+                              <DataRow label="Priority" value={fileDetails.priority} />
+                              <DataRow label="Marketing Officer" value={fileDetails.marketingOfficer} />
+                              <DataRow label="Branch Code" value={fileDetails.branchCode} />
+                            </div>
+                          </div>
+
+                          <div className="fit-section full">
+                            <h3><Map size={14} /> Custody Pipeline</h3>
+                            <div className="custody-pipeline">
+                              <div className="cp-node active">
+                                <div className="cp-icon"><Building2 size={16} /></div>
+                                <div className="cp-details">
+                                  <span className="cp-label">Origin Branch</span>
+                                  <span className="cp-value">{fileDetails.branchCode || 'HEAD_OFFICE'}</span>
+                                </div>
+                              </div>
+                              <div className="cp-connector active"></div>
+                              <div className={`cp-node ${fileDetails.currentDept ? 'active' : ''}`}>
+                                <div className="cp-icon"><Users size={16} /></div>
+                                <div className="cp-details">
+                                  <span className="cp-label">Active Department</span>
+                                  <span className="cp-value">{fileDetails.currentDept?.name || 'Central Vault'}</span>
+                                </div>
+                              </div>
+                              <div className="cp-connector"></div>
+                              <div className={`cp-node ${fileDetails.currentUser ? 'active' : ''}`}>
+                                <div className="cp-icon"><User size={16} /></div>
+                                <div className="cp-details">
+                                  <span className="cp-label">Assigned Custodian</span>
+                                  <span className="cp-value">{fileDetails.currentUser?.name || 'Unassigned'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="fit-section full">
+                            <h3><TrendingUp size={14} /> Verification Protocol Status</h3>
+                            <div className="verification-matrix">
+                              <div className="vm-node">
+                                <label>Client Validation</label>
+                                <div className={`status-pill ${fileDetails.customerStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                                  {fileDetails.customerStatus || 'NOT_STARTED'}
+                                </div>
+                              </div>
+                              <div className="vm-node">
+                                <label>Guarantor Validation</label>
+                                <div className={`status-pill ${fileDetails.guarantorStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                                  {fileDetails.guarantorStatus || 'NOT_STARTED'}
+                                </div>
+                              </div>
+                              <div className="vm-node">
+                                <label>Security Audit</label>
+                                <div className={`status-pill ${fileDetails.thirdPartyStatus === 'VERIFIED' ? 'success' : 'pending'}`}>
+                                  {fileDetails.thirdPartyStatus || 'PENDING'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* IDENTITY TAB */}
+                    {activeTab === 'IDENTITY' && (
+                      <div className="tab-pane identity-pane animate-slide-fade">
+                        <div className="kyc-scroll-area">
+                          <div className="kyc-cluster">
+                            <div className="kyc-header customer">
+                              <User size={18} />
+                              <span>Primary Customer KYC Profile</span>
+                            </div>
+                            <div className="field-grid">
+                              <DataRow label="Full Name" value={fileDetails.title} fullWidth />
+                              <DataRow label="NIC / Passport" value={fileDetails.nic} />
+                              <DataRow label="Contact Number" value={fileDetails.contactNo} />
+                              <DataRow label="WhatsApp" value={fileDetails.whatsappNo} />
+                              <DataRow label="Alt Contact" value={fileDetails.altContactNo} />
+                              <DataRow label="Best Time to Call" value={fileDetails.bestTimeToCall} />
+                              <DataRow label="Residence Type" value={fileDetails.residenceType} />
+                              <DataRow label="Address" value={fileDetails.address} fullWidth />
+                              <DataRow label="Employment" value={fileDetails.employmentType} />
+                              <DataRow label="Employer" value={fileDetails.employerName} />
+                              <DataRow label="Job Title" value={fileDetails.jobTitle} />
+                              <DataRow label="Eco. Sector" value={fileDetails.economicSector} />
+                              <DataRow label="Salary Date" value={fileDetails.salaryDate} />
+                              <DataRow label="Experience" value={fileDetails.workExperience} />
+                              <DataRow label="Monthly Income" value={fileDetails.monthlyIncome} />
+                              <DataRow label="Other Income" value={fileDetails.otherIncome} />
+                            </div>
+                          </div>
+
+                          <div className="kyc-cluster" style={{ marginTop: '2rem' }}>
+                            <div className="kyc-header guarantor">
+                              <ShieldCheck size={18} />
+                              <span>Verified Guarantor KYC Profile</span>
+                            </div>
+                            <div className="field-grid">
+                              <DataRow label="NIC / Passport" value={fileDetails.guarantorNic} />
+                              <DataRow label="Relationship" value={fileDetails.guarantorRelationship} />
+                              <DataRow label="Contact Number" value={fileDetails.guarantorContactNo} />
+                              <DataRow label="WhatsApp" value={fileDetails.guarantorWhatsappNo} />
+                              <DataRow label="Residence Type" value={fileDetails.guarantorResidenceType} />
+                              <DataRow label="Address" value={fileDetails.guarantorAddress} fullWidth />
+                              <DataRow label="Employment" value={fileDetails.guarantorEmploymentType} />
+                              <DataRow label="Employer" value={fileDetails.guarantorEmployerName} />
+                              <DataRow label="Monthly Income" value={fileDetails.guarantorMonthlyIncome} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PROTOCOL HISTORY TAB */}
+                    {activeTab === 'PROTOCOL' && (
+                      <div className="tab-pane protocol-pane animate-slide-fade">
+                        <div className="timeline">
+                          {fileDetails.movements?.length === 0 ? (
+                            <div className="null-timeline">No historical transfers recorded for this facility.</div>
+                          ) : fileDetails.movements.map((move: any, idx: number) => (
+                            <div key={move.id} className="timeline-item">
+                              <div className="tl-line" />
+                              <div className={`tl-indicator ${idx === 0 ? 'animate-transmission' : ''}`} />
+                              <div className="tl-body">
+                                <div className="tl-header">
+                                  <div className="tl-main">
+                                    <CornerDownRight size={14} className="tl-arrow" />
+                                    <span>Transferred to <strong>{move.toDept.name}</strong></span>
+                                  </div>
+                                  <span className="tl-date">{new Date(move.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div className="tl-meta">
+                                  <span className="tl-user">Sent by: {move.sender.name}</span>
+                                  <span className={`tl-status ${move.status.toLowerCase()}`}>{move.status}</span>
+                                </div>
+                                {move.comments && (
+                                  <div className="tl-comments">
+                                    <Info size={12} />
+                                    <p>{move.comments}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )}
 
         <style>{`
@@ -483,6 +514,24 @@ function FileDirectoryContent() {
           .data-row.full { grid-column: 1 / -1; }
           .dr-label { font-size: 0.65rem; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.02em; }
           .dr-value { font-size: 0.9rem; font-weight: 700; color: var(--slate-800); }
+
+          .custody-pipeline { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; width: 100%; }
+          .cp-node { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex: 1; text-align: center; position: relative; z-index: 2; opacity: 0.5; filter: grayscale(1); transition: all 0.3s; }
+          .cp-node.active { opacity: 1; filter: grayscale(0); }
+          .cp-icon { width: 44px; height: 44px; background: white; border: 2px solid var(--slate-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--slate-400); box-shadow: 0 0 0 4px #f8fafc; transition: all 0.2s cubic-bezier(0.16,1,0.3,1); }
+          .cp-node.active .cp-icon { border-color: var(--primary-color); color: var(--primary-color); background: #eff6ff; box-shadow: 0 0 0 6px #dbeafe; }
+          .cp-details { display: flex; flex-direction: column; gap: 0.15rem; }
+          .cp-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--slate-400); letter-spacing: 0.05em; }
+          .cp-node.active .cp-label { color: var(--primary-color); }
+          .cp-value { font-size: 0.85rem; font-weight: 700; color: var(--slate-900); }
+          .cp-connector { flex: 1; height: 2px; background: var(--slate-200); position: relative; z-index: 1; margin: -2.5rem 0.5rem 0 0.5rem; transition: background 0.3s; }
+          .cp-connector.active { background: var(--primary-color); }
+          
+          @media (max-width: 640px) {
+            .custody-pipeline { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+            .cp-node { flex-direction: row; text-align: left; }
+            .cp-connector { display: none; }
+          }
 
           .verification-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
           .vm-node { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; padding: 1rem; background: #f8fafc; border-radius: 12px; }
