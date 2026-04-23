@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const baseWhere: any = isCallingAgent ? { currentUserId: userId } : {};
     
     let files;
-    
+    if (search) {
       files = await prisma.file.findMany({
         where: {
           ...baseWhere,
