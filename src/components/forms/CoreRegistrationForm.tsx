@@ -14,7 +14,8 @@ import {
   UserCircle,
   Zap,
   CheckCircle2,
-  Calendar
+  Calendar,
+  Layout
 } from 'lucide-react';
 
 interface CoreRegistrationFormProps {
