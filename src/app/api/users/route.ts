@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'; 
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { recordAuditLog } from '@/lib/audit';
@@ -38,17 +38,20 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
+    const dbRole = await prisma.role.findUnique({ where: { name: role || 'STAFF' } });
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
         passwordHash,
         role: role || 'STAFF',
+        roleId: dbRole?.id || null,
         departmentId: departmentId || null,
         nic: nic || null,
         isCallingAgent: isCallingAgent || false,
       },
-      include: { department: true },
+      include: { department: true, roleRelation: true },
     });
 
     const { passwordHash: _, ...safeUser } = user;

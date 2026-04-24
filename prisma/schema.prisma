@@ -12,7 +12,9 @@ model User {
   id               String       @id @default(uuid())
   email            String       @unique
   passwordHash     String
-  role             Role         @default(STAFF)
+  roleId           String?
+  roleRelation     Role?        @relation(fields: [roleId], references: [id])
+  role             String       @default("STAFF")
   departmentId     String?
   department       Department?  @relation(fields: [departmentId], references: [id])
   name             String
@@ -218,10 +220,12 @@ model Notification {
   createdAt        DateTime         @default(now())
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  STAFF
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
 }
 
 enum FileType {

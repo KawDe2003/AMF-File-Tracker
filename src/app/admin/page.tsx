@@ -21,6 +21,16 @@ interface AllocConfig {
   autoAllocate: boolean;
 }
 
+interface Role {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  _count?: {
+    users: number;
+  };
+}
+
 interface AuditLog {
   id: string;
   action: string;
@@ -70,7 +80,14 @@ export default function AdminPanel() {
   // --- Audit Logs State ---
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"personnel" | "allocation" | "audit">("personnel");
+  const [activeTab, setActiveTab] = useState<"personnel" | "allocation" | "roles" | "audit">("personnel");
+
+  // --- Roles State ---
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(false);
+  const [showRoleForm, setShowRoleForm] = useState(false);
+  const [creatingRole, setCreatingRole] = useState(false);
+  const [newRole, setNewRole] = useState({ name: "", description: "" });
 
   const fetchUsers = useCallback(async () => {
     setUsersLoading(true);
@@ -93,12 +110,27 @@ export default function AdminPanel() {
     }
   }, []);
 
+  const fetchRoles = useCallback(async () => {
+    setRolesLoading(true);
+    try {
+      const res = await fetch("/api/roles");
+      const data = await res.json();
+      setRoles(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRolesLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
     fetch("/api/departments").then(r => r.json()).then(setDepartments).catch(() => {});
     fetch("/api/allocation/config").then(r => r.json()).then(setConfig).finally(() => setConfigLoading(false));
     if (activeTab === "audit") fetchLogs();
-  }, [fetchUsers, activeTab, fetchLogs]);
+    if (activeTab === "roles") fetchRoles();
+  }, [fetchUsers, activeTab, fetchLogs, fetchRoles]);
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +149,25 @@ export default function AdminPanel() {
       fetchUsers();
     } catch { show("Network error", "error"); }
     finally { setCreating(false); }
+  };
+
+  const handleCreateRole = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingRole(true);
+    try {
+      const res = await fetch("/api/roles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRole),
+      });
+      const data = await res.json();
+      if (!res.ok) { show(data.error || "Failed to create role", "error"); return; }
+      show(`Role "${data.name}" created successfully!`, "success");
+      setShowRoleForm(false);
+      setNewRole({ name: "", description: "" });
+      fetchRoles();
+    } catch { show("Network error", "error"); }
+    finally { setCreatingRole(false); }
   };
 
   const toggleCallingAgent = async (user: User) => {
@@ -193,6 +244,9 @@ export default function AdminPanel() {
           <button className={`tab-btn ${activeTab === 'allocation' ? 'active' : ''}`} onClick={() => setActiveTab('allocation')}>
             <Shuffle size={16} /> Allocation
           </button>
+          <button className={`tab-btn ${activeTab === 'roles' ? 'active' : ''}`} onClick={() => setActiveTab('roles')}>
+            <ShieldCheck size={16} /> Roles
+          </button>
           <button className={`tab-btn ${activeTab === 'audit' ? 'active' : ''}`} onClick={() => setActiveTab('audit')}>
             <Clock size={16} /> Audit Trail
           </button>
@@ -233,9 +287,9 @@ export default function AdminPanel() {
                     <div className="field-group">
                       <label className="field-label">Role *</label>
                       <select className="field-select" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
-                        <option value="STAFF">Staff</option>
-                        <option value="MANAGER">Manager</option>
-                        <option value="ADMIN">Administrator</option>
+                        {roles.map(r => (
+                          <option key={r.id} value={r.name}>{r.name.charAt(0) + r.name.slice(1).toLowerCase()}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -317,6 +371,70 @@ export default function AdminPanel() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === "roles" && (
+            <div className="card admin-card animate-fade-in">
+              <div className="ac-header">
+                <div>
+                  <h3 className="ac-title"><ShieldCheck size={18} /> Role Management</h3>
+                  <p className="ac-sub">Define custom system access levels</p>
+                </div>
+                <button className="btn btn-primary" onClick={() => setShowRoleForm(!showRoleForm)}>
+                  <Plus size={16} /> Create New Role
+                </button>
+              </div>
+
+              {showRoleForm && (
+                <form onSubmit={handleCreateRole} className="create-user-form">
+                  <div className="cuf-title">Define New System Role</div>
+                  <div className="cuf-grid">
+                    <div className="field-group">
+                      <label className="field-label">Role Name (Identifier) *</label>
+                      <input className="field-input" placeholder="AUDITOR" required
+                        value={newRole.name} onChange={e => setNewRole({ ...newRole, name: e.target.value.toUpperCase() })} />
+                    </div>
+                    <div className="field-group">
+                      <label className="field-label">Description</label>
+                      <input className="field-input" placeholder="Has view-only access to reports"
+                        value={newRole.description} onChange={e => setNewRole({ ...newRole, description: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="cuf-actions">
+                    <button type="button" className="btn btn-outline" onClick={() => setShowRoleForm(false)}>Cancel</button>
+                    <button type="submit" className="btn btn-primary" disabled={creatingRole}>
+                      {creatingRole ? <><Loader2 size={15} className="spin" /> Creating...</> : <><ShieldCheck size={15} /> Create Role</>}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="personnel-list">
+                {rolesLoading ? (
+                  <div className="list-loading"><Loader2 size={20} className="spin" /> Loading roles...</div>
+                ) : roles.length === 0 ? (
+                  <div className="list-empty">No custom roles defined.</div>
+                ) : (
+                  roles.map(r => (
+                    <div key={r.id} className="personnel-row">
+                      <div className="pr-avatar" style={{ background: 'var(--slate-400)' }}>
+                        <ShieldCheck size={14} />
+                      </div>
+                      <div className="pr-info">
+                        <span className="pr-name">{r.name}</span>
+                        <span className="pr-email">{r.description || 'No description provided'}</span>
+                      </div>
+                      <div className="role-meta">
+                        <span className="user-count-badge">{r._count?.users || 0} Users</span>
+                        <div className="role-date">
+                          {new Date(r.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           )}
 
@@ -441,6 +559,9 @@ export default function AdminPanel() {
         .agent-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.68rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: var(--slate-100); color: var(--slate-500); transition: all 0.2s; flex-shrink: 0; }
         .agent-pill.active { background: #f0fdf4; color: var(--success-color); border-color: #bbf7d0; }
         .agent-pill:hover { transform: scale(1.05); }
+        .role-date { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+        .role-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+        .user-count-badge { font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.4rem; background: #eff6ff; color: var(--primary-color); border: 1px solid #dbeafe; border-radius: 4px; }
 
         .alloc-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
         .alloc-info-bar { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; background: var(--slate-50); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; }
