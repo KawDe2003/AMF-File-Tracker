@@ -28,6 +28,7 @@ model User {
   currentFiles     File[]         @relation("CurrentUser")
   
   isCallingAgent   Boolean        @default(false)
+  lastLogin        DateTime?
 }
 
 model Department {

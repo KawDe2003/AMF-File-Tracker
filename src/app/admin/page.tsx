@@ -13,6 +13,7 @@ interface User {
   email: string;
   role: string;
   isCallingAgent: boolean;
+  lastLogin: string | null;
   department?: { name: string } | null;
 }
 
@@ -369,6 +370,39 @@ export default function AdminPanel() {
                       </button>
                     </div>
                   </div>
+
+                  <div className="alloc-agents-section">
+                    <h4 className="aas-title">Agent Availability & Login Activity</h4>
+                    <div className="agent-activity-list">
+                      {users.filter(u => u.isCallingAgent).map(agent => {
+                        const lastLoginDate = agent.lastLogin ? new Date(agent.lastLogin) : null;
+                        const isRecentlyActive = lastLoginDate && (new Date().getTime() - lastLoginDate.getTime() < 24 * 60 * 60 * 1000); // Active if logged in last 24h
+                        
+                        return (
+                          <div key={agent.id} className="agent-activity-row">
+                            <div className="aar-left">
+                              <div className={`activity-indicator ${isRecentlyActive ? 'active' : 'inactive'}`} />
+                              <div className="aar-info">
+                                <span className="aar-name">{agent.name}</span>
+                                <span className="aar-status">{isRecentlyActive ? 'Available' : 'Inactive'}</span>
+                              </div>
+                            </div>
+                            <div className="aar-right">
+                              <span className="aar-time-label">Last Login:</span>
+                              <span className="aar-time">
+                                {lastLoginDate ? 
+                                  new Intl.DateTimeFormat('en-GB', { 
+                                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+                                  }).format(lastLoginDate) : 
+                                  'Never'
+                                }
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -562,6 +596,20 @@ export default function AdminPanel() {
         .role-date { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
         .role-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
         .user-count-badge { font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.4rem; background: #eff6ff; color: var(--primary-color); border: 1px solid #dbeafe; border-radius: 4px; }
+        
+        .agent-activity-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+        .agent-activity-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; background: white; border: 1px solid var(--border-color); border-radius: 10px; transition: all 0.2s; }
+        .agent-activity-row:hover { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .aar-left { display: flex; align-items: center; gap: 0.75rem; }
+        .activity-indicator { width: 8px; height: 8px; border-radius: 50%; }
+        .activity-indicator.active { background: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
+        .activity-indicator.inactive { background: var(--slate-300); }
+        .aar-info { display: flex; flex-direction: column; }
+        .aar-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .aar-status { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .aar-right { text-align: right; display: flex; flex-direction: column; }
+        .aar-time-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; }
+        .aar-time { font-size: 0.75rem; font-weight: 700; color: var(--slate-600); }
 
         .alloc-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
         .alloc-info-bar { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; background: var(--slate-50); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; }
